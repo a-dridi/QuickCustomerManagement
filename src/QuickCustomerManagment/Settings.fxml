@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="AnchorPane" prefHeight="804.0" prefWidth="806.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="QuickCustomerManagment.SettingsController">
+   <children>
+      <Text fx:id="settingsHeader" fill="#751c1ced" layoutX="273.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Settings" textAlignment="CENTER" wrappingWidth="273.13671875">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Text>
+      <VBox layoutX="14.0" layoutY="57.0" prefHeight="731.0" prefWidth="785.0">
+         <children>
+            <HBox prefHeight="46.0" prefWidth="795.0">
+               <children>
+                  <Text fx:id="defaultcurrencySettingsDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Default Currency: " wrappingWidth="190.13671875">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Text>
+                  <ComboBox fx:id="defaultcurrencySettingsCombobox" prefWidth="581.0" />
+               </children>
+            </HBox>
+            <VBox prefHeight="633.0" prefWidth="785.0" style="-fx-border-color: brown;">
+               <children>
+                  <Label fx:id="yourCompanyDetailsLabel" text="Your company details">
+                     <font>
+                        <Font name="Arial Italic" size="14.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin>
+                  </Label>
+                  <HBox prefHeight="46.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanynameDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Company name: " wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="companyDetailsCompanynameField" prefHeight="25.0" prefWidth="586.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanystreetDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Company street: " wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="companyDetailsCompanystreetField" prefHeight="25.0" prefWidth="586.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanypostcodeDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Post code: " wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="companyDetailsCompanypostcodeField" prefHeight="25.0" prefWidth="586.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanycityDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="City: " wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="companyDetailsCompanycityField" prefHeight="25.0" prefWidth="586.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanycountyDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Company county: " wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="companyDetailsCompanycountyField" prefHeight="25.0" prefWidth="586.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanycountryDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Company country: " wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="companyDetailsCompanycountryField" prefHeight="25.0" prefWidth="586.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanytaxnoDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Company tax no:" wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="companyDetailsCompanytaxnoField" prefHeight="25.0" prefWidth="586.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanyemailDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Company email:" wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="companyDetailsCompanyemailField" prefHeight="25.0" prefWidth="586.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanytelephoneDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Company phone: " wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="companyDetailsCompanytelephoneField" prefHeight="25.0" prefWidth="586.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="46.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanywebsiteDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Company website:" wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextField fx:id="companyDetailsCompanywebsiteField" prefHeight="25.0" prefWidth="586.0" />
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="92.0" prefWidth="795.0">
+                     <children>
+                        <Text fx:id="companyDetailsCompanyadditionalinfoDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Additional Info (bank details, foot print, etc.):" wrappingWidth="190.13671875">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                        <TextArea fx:id="companyDetailsCompanyadditionalinfoTextarea" prefHeight="73.0" prefWidth="581.0" />
+                     </children>
+                  </HBox>
+               </children>
+               <VBox.margin>
+                  <Insets bottom="15.0" right="10.0" top="15.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+            <HBox prefHeight="92.0" prefWidth="795.0">
+               <children>
+                  <Text fx:id="noteSettingsDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Note: " wrappingWidth="190.13671875">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Text>
+                  <TextArea fx:id="noteSettingsTextarea" prefHeight="73.0" prefWidth="581.0" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="15.0" />
+               </VBox.margin>
+            </HBox>
+            <BorderPane prefHeight="65.0" prefWidth="785.0">
+               <center>
+                  <Button fx:id="savesettingsButton" mnemonicParsing="false" onAction="#handleSaveSettings" prefHeight="39.0" prefWidth="177.0" style="-fx-background-color: green;" text="Save" textFill="WHITE" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets top="5.0" />
+                     </BorderPane.margin>
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Button>
+               </center>
+            </BorderPane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>
