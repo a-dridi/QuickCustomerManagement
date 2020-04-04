@@ -14,6 +14,7 @@ import javax.mail.internet.MimeMultipart;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -31,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import com.itextpdf.text.BadElementException;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
@@ -38,6 +40,7 @@ import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
 import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -404,7 +407,7 @@ public class NewInvoiceController implements Initializable {
 			System.out.println("Invoice created at: " + createdInvoicePDFPath);
 			System.out.println("Send invoice to: " + this.selectedInvoiceCustomer.getEmail());
 			String emailStatus = sendInvoiceEmail(INVOICEID, this.customerFirstname, this.customerLastname,
-					this.selectedInvoiceCustomer.getEmail(), (double) (sumParsed), locale.getCountry(),
+					this.selectedInvoiceCustomer.getEmail(), (double) (sumParsed), this.currencyinvoicecombobox.getSelectionModel().getSelectedItem().toString(), locale.getCountry(),
 					createdInvoicePDFPath);
 			if (emailStatus.isEmpty()) {
 				System.out.println("Invoice email was sent. ");
@@ -543,14 +546,34 @@ public class NewInvoiceController implements Initializable {
 		invoiceHeader.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 		invoiceHeader.getDefaultCell().setVerticalAlignment(Element.ALIGN_CENTER);
 		invoiceHeader.getDefaultCell().setFixedHeight(19);
-		invoiceHeader.addCell((loadData.getAppsettings().get("invoiceCompanyname")).trim());
+		Image companyLogo = null;
+		try {
+			companyLogo = Image.getInstance(loadData.getAppsettings().get("invoiceCompanylogopath"));
+		} catch (BadElementException e1) {
+			ErrorReport.reportException(e1);
+			System.out.println("" + e1);
+			companyLogo=null;
+		} catch (MalformedURLException e1) {
+			ErrorReport.reportException(e1);
+			System.out.println("" + e1);
+			companyLogo=null;
+		} catch (IOException e1) {
+			ErrorReport.reportException(e1);
+			System.out.println("" + e1);
+			companyLogo=null;
+		}
+		if (companyLogo != null) {
+			invoiceHeader.addCell(companyLogo);
+		} else {
+			invoiceHeader.addCell(new Phrase(new Chunk(" ")));
+		}
 		invoiceHeader.addCell((loadData.getAppsettings().get("invoiceCompanystreet")).trim());
 		invoiceHeader.addCell((loadData.getAppsettings().get("invoiceCompanyemail")).trim());
-		invoiceHeader.addCell(new Phrase(new Chunk((loadData.getAppsettings().get("invoiceCompanytaxno").trim()))));
+		invoiceHeader.addCell(new Phrase(new Chunk((loadData.getAppsettings().get("invoiceCompanyname").trim()))));
 		invoiceHeader.addCell((loadData.getAppsettings().get("invoiceCompanypostcode") + " "
 				+ loadData.getAppsettings().get("invoiceCompanycity")).trim());
 		invoiceHeader.addCell((loadData.getAppsettings().get("invoiceCompanytelephone")).trim());
-		invoiceHeader.addCell(new Phrase(new Chunk(" ")));
+		invoiceHeader.addCell(new Phrase(new Chunk((loadData.getAppsettings().get("invoiceCompanytaxno").trim()))));
 		invoiceHeader.addCell((loadData.getAppsettings().get("invoiceCompanycounty")).trim());
 		invoiceHeader.addCell(loadData.getAppsettings().get("invoiceCompanywebsite"));
 		invoiceHeader.addCell(new Phrase(new Chunk(" ")));
@@ -692,7 +715,7 @@ public class NewInvoiceController implements Initializable {
 	 *         error message.
 	 */
 	public String sendInvoiceEmail(int invoiceId, String customerForename, String customerSurname, String customerEmail,
-			double invoiceamount, String languageCode, String relativeInvoiceFilePath) {
+			double invoiceamount, String currencyiso, String languageCode, String relativeInvoiceFilePath) {
 		Optional<String> attachmentFilePath = Optional.ofNullable(relativeInvoiceFilePath);
 		if (attachmentFilePath.isEmpty() || attachmentFilePath.get().length() < 5) {
 			return "Invoice pdf could not be created. Please check your invoices folder.";
@@ -763,13 +786,13 @@ public class NewInvoiceController implements Initializable {
 					+ "\n\n"
 					+ AppDataSettings.languageBundle.getString("invoicemailEmailtextcontentText")
 							.replace("--%1--", "" + invoiceId)
-							.replace("--%2--", String.format("%.2f", invoiceamount, Locale.US))
+							.replace("--%2--", String.format("%.2f " + currencyiso, invoiceamount, Locale.US))
 					+ "\n\n" + AppDataSettings.languageBundle.getString("invoicemailEmailtextendgreetingsText") + "\n"
 					+ this.loadData.getAppsettings().get("emailForenameSurname") + "\n\n"
 					+ this.loadData.getAppsettings().get("invoiceCompanyname") + "\n"
 					+ this.loadData.getAppsettings().get("invoiceCompanystreet") + "\n"
-					+ this.loadData.getAppsettings().get("invoiceCompanypostcode").trim()
-					+ " " + this.loadData.getAppsettings().get("invoiceCompanycity") + "\n"
+					+ this.loadData.getAppsettings().get("invoiceCompanypostcode").trim() + " "
+					+ this.loadData.getAppsettings().get("invoiceCompanycity") + "\n"
 					+ this.loadData.getAppsettings().get("invoiceCompanycountry") + "\n\n"
 					+ this.loadData.getAppsettings().get("invoiceCompanytelephone") + "\n"
 					+ this.loadData.getAppsettings().get("invoiceCompanyemail") + "\n"

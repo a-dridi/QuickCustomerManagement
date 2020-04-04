@@ -24,8 +24,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
  * submitted. Needs internet connection.
  * 
  * Requirement: Apache HttpClient 4.5.12(httpclient-4.5.12.jar), HttpCore 4.4.13
- * (httpcore-4.4.13.jar) and ReportServerUrl/ApplicationName/Username/Password file "credentials.txt".
- * Compatible with older Java versions. Can be used from Java 8+.
+ * (httpcore-4.4.13.jar) and ReportServerUrl/ApplicationName/Username/Password
+ * file "credentials.txt". Compatible with older Java versions. Can be used from
+ * Java 8+.
  * 
  * Link to the dependencies files: http://hc.apache.org/downloads.cgi
  *
@@ -46,15 +47,23 @@ public class ErrorReport {
 	 *         the process. Empty string if server did not save the error
 	 */
 	public static String reportError(String errorTitle, String errorDescription) {
+		
+		if(errorTitle==null) {
+			errorTitle = " - ";
+		}
+		if(errorDescription==null) {
+			errorDescription = " - ";
+		}
+
 		// READ report url, application name, username and password credentials.
 		String username = "";
 		String password = "";
 		try (BufferedReader readCredentials = new BufferedReader(new FileReader("credentials.txt"))) {
 			try {
 				ERRORREPORTURL = (readCredentials.readLine().split("="))[1];
-				System.out.println(""+ERRORREPORTURL);
+				System.out.println("" + ERRORREPORTURL);
 				APPLICATIONNAME = (readCredentials.readLine().split("="))[1];
-				System.out.println(""+APPLICATIONNAME);
+				System.out.println("" + APPLICATIONNAME);
 				username = (readCredentials.readLine().split("="))[1];
 				password = (readCredentials.readLine().split("="))[1];
 			} catch (NullPointerException e) {
@@ -66,7 +75,7 @@ public class ErrorReport {
 
 			return null;
 		}
-		
+
 		CredentialsProvider authProvider = new BasicCredentialsProvider();
 		HttpPost addErrorReportRequest = new HttpPost(ERRORREPORTURL);
 
@@ -83,7 +92,6 @@ public class ErrorReport {
 		// Create Report content as JSON file for the error report server
 		StringEntity errorReportEntity = new StringEntity(errorReportJSONContent, ContentType.APPLICATION_JSON);
 		addErrorReportRequest.setEntity(errorReportEntity);
-
 
 		// Authentication for the error report server
 		UsernamePasswordCredentials credentials = new UsernamePasswordCredentials(username, password);
@@ -120,7 +128,10 @@ public class ErrorReport {
 		} catch (Exception exception) {
 			errorMessage.append("-");
 		}
-
-		return reportError(e.getCause().toString(), errorMessage.toString());
+		try {
+			return reportError(e.getCause().toString(), errorMessage.toString());
+		} catch (Exception exception) {
+			return reportError(" ", errorMessage.toString());
+		}
 	}
 }

@@ -45,9 +45,9 @@ import model.UnpaidInvoice;
  * @author
  */
 public class AppDataSettings implements Serializable {
-	private String errorMessage;
+	public static String errorMessage;
 	public static ResourceBundle languageBundle;
-	public static Supplier <Date> todayDateFactory = Date::new;
+	public static Supplier<Date> todayDateFactory = Date::new;
 	private Map<String, String> currencies = new TreeMap<>();
 	private List<String> countries = new ArrayList<>();
 	private Map<String, String> appsettings = new TreeMap<>();
@@ -169,27 +169,35 @@ public class AppDataSettings implements Serializable {
 				st.execute(sql);
 				st.close();
 				st = c.createStatement();
+				sql = "CREATE TABLE IF NOT EXISTS products " + "(id INTEGER PRIMARY KEY, " + "productname TEXT,"
+						+ "priceperunit REAL," + "availableamount INTEGER," + "note TEXT" + ")";
+				st.execute(sql);
+				st.close();
+				st = c.createStatement();
 				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "defaultCurrencyIso" + "', '" + "USD"
 						+ "')";
 				st.execute(sql);
-				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "emailForenameSurname" + "', '" + " " + "')";
+				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "emailForenameSurname" + "', '" + " "
+						+ "')";
 				st.execute(sql);
-				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "emailEmailaddress" + "', '" + "" + "')";
+				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "emailEmailaddress" + "', '" + ""
+						+ "')";
 				st.execute(sql);
 				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "emailHost" + "', '" + "" + "')";
 				st.execute(sql);
 				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "emailPort" + "', " + "465" + ")";
 				st.execute(sql);
-				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "emailUsername" + "', '" + ""
-						+ "')";
+				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "emailUsername" + "', '" + "" + "')";
 				st.execute(sql);
-				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "emailPassword" + "', '" + ""
-						+ "')";
+				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "emailPassword" + "', '" + "" + "')";
 				st.execute(sql);
 				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "settingsNote" + "', '" + "..." + "')";
 				st.execute(sql);
 				// invoiceCompanyxxx - Company information that is displayed on invoices
 				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "invoiceCompanyname" + "', '" + "."
+						+ "')";
+				st.execute(sql);
+				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "invoiceCompanylogopath" + "', '" + ""
 						+ "')";
 				st.execute(sql);
 				sql = "INSERT INTO appsettings (description, value) VALUES ('" + "invoiceCompanystreet" + "', '" + " "
@@ -290,10 +298,10 @@ public class AppDataSettings implements Serializable {
 	 * @return
 	 */
 
-	public boolean addNewCustomer(String customerEmail, String forenameclientfield, String surnameclientfield, String companynameclientfield,
-			String taxnumber, String streetclientfield, Integer zipcodeclientfield, String cityclientfield,
-			String countyclientfield, String countryclientcombobox, String currencyclientcombobox,
-			String noteclienttextarea) {
+	public boolean addNewCustomer(String customerEmail, String forenameclientfield, String surnameclientfield,
+			String companynameclientfield, String taxnumber, String streetclientfield, Integer zipcodeclientfield,
+			String cityclientfield, String countyclientfield, String countryclientcombobox,
+			String currencyclientcombobox, String noteclienttextarea) {
 
 		Connection c = null;
 
@@ -304,10 +312,10 @@ public class AppDataSettings implements Serializable {
 			// c.setAutoCommit(false);
 			Statement st = c.createStatement();
 			String sql = "INSERT INTO Customer (email, forename, lastname, companyname, taxnumber, street, zipcode, city, county, country, currencyiso, note) VALUES ('"
-					+ customerEmail+ "', '" + forenameclientfield + "', '" + surnameclientfield + "', '" + companynameclientfield + "', '"
-					+ taxnumber + "', '" + streetclientfield + "', " + zipcodeclientfield + ", '" + cityclientfield
-					+ "', '" + countyclientfield + "', '" + countryclientcombobox + "', '" + currencyclientcombobox
-					+ "', '" + noteclienttextarea + "')";
+					+ customerEmail + "', '" + forenameclientfield + "', '" + surnameclientfield + "', '"
+					+ companynameclientfield + "', '" + taxnumber + "', '" + streetclientfield + "', "
+					+ zipcodeclientfield + ", '" + cityclientfield + "', '" + countyclientfield + "', '"
+					+ countryclientcombobox + "', '" + currencyclientcombobox + "', '" + noteclienttextarea + "')";
 			st.executeUpdate(sql);
 			st.close();
 			// c.commit();
@@ -318,6 +326,106 @@ public class AppDataSettings implements Serializable {
 		} catch (Exception e) {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			errorMessage = "add New Customer Error: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	public boolean updateCustomer(String customerEmail, String forenameclientfield, String surnameclientfield,
+			String companynameclientfield, String taxnumber, String streetclientfield, Integer zipcodeclientfield,
+			String cityclientfield, String countyclientfield, String countryclientcombobox,
+			String currencyclientcombobox, String noteclienttextarea) {
+		Connection c = null;
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+
+			Statement st = c.createStatement();
+			String sql = "UPDATE Customer SET email='" + customerEmail + "', forename = '" + forenameclientfield
+					+ "', lastname = '" + surnameclientfield + "', companyname = '" + companynameclientfield
+					+ "', taxnumber = '" + taxnumber + "', street = '" + streetclientfield + "', zipcode = "
+					+ zipcodeclientfield + ", city = '" + cityclientfield + "', county = '" + countyclientfield
+					+ "', country = '" + countryclientcombobox + "', currencyiso = '" + currencyclientcombobox
+					+ "', note = '" + noteclienttextarea + "'";
+
+			st.executeUpdate(sql);
+			st.close();
+			c.close();
+
+			return true;
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "add New Customer Error: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	public Customer getCustomerById(Integer id) {
+		Customer customer;
+		Connection c = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+			String sql = "SELECT id, email, forename, lastname, companyname, taxnumber, street, zipcode, city, county, country, currencyiso, note FROM customer where id = "
+					+ id;
+			ResultSet rs = st.executeQuery(sql);
+
+			customer = new Customer(rs.getInt("id"), rs.getString("email"), rs.getString("forename"),
+					rs.getString("lastname"), rs.getString("companyname"), rs.getString("taxnumber"),
+					rs.getString("street"), rs.getInt("zipcode"), rs.getString("city"), rs.getString("county"),
+					rs.getString("country"), rs.getString("currencyiso"), rs.getString("note"));
+
+			rs.close();
+			st.close();
+			c.close();
+
+			return customer;
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "calculateNetSumPosItems: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return null;
+		}
+	}
+
+	public boolean deleteCustomerById(Integer id) {
+		Connection c = null;
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+
+			String sql = "DELETE FROM customer WHERE id = ";
+			st.executeUpdate(sql);
+			st.close();
+			c.commit();
+			c.close();
+
+			return true;
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "deleteCustomerById Error: " + e.getMessage();
 			try {
 				c.close();
 			} catch (SQLException e1) {
@@ -347,7 +455,8 @@ public class AppDataSettings implements Serializable {
 			int sumpriceCent = (int) ((sumprice * 100));
 
 			String sql = "INSERT INTO Invoicepos (id, itemname, unit, priceperunit, sumprice, invoiceid) VALUES (" + id
-					+ ", '" + itemname + "', " + unit + ", " + priceperunitCent + ", " + sumpriceCent + ", " + invoiceId + ")";
+					+ ", '" + itemname + "', " + unit + ", " + priceperunitCent + ", " + sumpriceCent + ", " + invoiceId
+					+ ")";
 			st.executeUpdate(sql);
 			st.close();
 			c.commit();
@@ -370,8 +479,7 @@ public class AppDataSettings implements Serializable {
 	/**
 	 * Delete invoice item into an invoice
 	 */
-	public boolean deleteInvoicePosItem(Integer id,
-			Integer invoiceId) {
+	public boolean deleteInvoicePosItem(Integer id, Integer invoiceId) {
 		Connection c = null;
 
 		try {
@@ -420,13 +528,14 @@ public class AppDataSettings implements Serializable {
 			int sumCent = (int) ((sum * 100));
 
 			int paidValue = paid ? 1 : 0;
-			
+
 			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy hh:mm");
 
 			String sql = "INSERT INTO invoice (id, date, customerid, paid, street, areacode, city, county, country, netsum, taxpct, taxval, sum, currencyiso, note) VALUES ("
-					+ id + ", '" + sdf.format(AppDataSettings.todayDateFactory.get()) + "', " + customerid + ", " + paidValue + ", '" + street + "', "
-					+ areacode + ", '" + city + "', '" + county + "', '" + country + "', " + netsumCent + ", " + taxpct
-					+ ", " + taxvalueCent + ", " + sumCent + ", '" + currencyiso + "', '" + note + "')";
+					+ id + ", '" + sdf.format(AppDataSettings.todayDateFactory.get()) + "', " + customerid + ", "
+					+ paidValue + ", '" + street + "', " + areacode + ", '" + city + "', '" + county + "', '" + country
+					+ "', " + netsumCent + ", " + taxpct + ", " + taxvalueCent + ", " + sumCent + ", '" + currencyiso
+					+ "', '" + note + "')";
 			st.executeUpdate(sql);
 			st.close();
 			c.commit();
@@ -647,7 +756,7 @@ public class AppDataSettings implements Serializable {
 	}
 
 	public List<Customer> getAllCustomers() {
-		List<Customer> customerList = new ArrayList();
+		List<Customer> customerList = new ArrayList<Customer>();
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -657,13 +766,14 @@ public class AppDataSettings implements Serializable {
 			Statement st = c.createStatement();
 			String sql = "SELECT id, email, forename, lastname, companyname, taxnumber, street, zipcode, city, county, country, currencyiso, note FROM customer";
 			ResultSet rs = st.executeQuery(sql);
-			Double sum = 0.0;
 
 			while (rs != null && rs.next()) {
 				customerList.add(new Customer(rs.getInt("id"), rs.getString("email"), rs.getString("forename"),
 						rs.getString("lastname"), rs.getString("companyname"), rs.getString("taxnumber"),
 						rs.getString("street"), rs.getInt("zipcode"), rs.getString("city"), rs.getString("county"),
-						rs.getString("country"), rs.getString("currencyiso"), rs.getString("note")));
+						rs.getString("country"), rs.getString("currencyiso"), rs.getString("note"),
+						AppDataSettings.languageBundle.getString("allcustomersWindowEditButtonTxt"),
+						AppDataSettings.languageBundle.getString("allcustomersWindowDeleteButtonTxt")));
 			}
 			rs.close();
 			st.close();
@@ -672,8 +782,8 @@ public class AppDataSettings implements Serializable {
 			return customerList;
 
 		} catch (Exception e) {
-			System.err.println(e.getClass().getName() + ": " + e.getMessage());
-			errorMessage = "calculateNetSumPosItems: " + e.getMessage();
+			System.err.println("getAllCustomers - " + e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "getAllCustomers: " + e.getMessage();
 			try {
 				c.close();
 			} catch (SQLException e1) {
@@ -695,9 +805,10 @@ public class AppDataSettings implements Serializable {
 			ResultSet rs = st.executeQuery(sql);
 
 			while (rs != null && rs.next()) {
-				unpaidInvoices.add(new UnpaidInvoice(rs.getInt(1), rs.getString(2), rs.getDouble(3)/100, rs.getString(4),
-						rs.getString(5), rs.getString(6), rs.getString(7),
-						AppDataSettings.languageBundle.getString("unpaidinvoicesPaidButton"),AppDataSettings.languageBundle.getString("unpaidinvoicesShowinvoiceButton")));
+				unpaidInvoices.add(new UnpaidInvoice(rs.getInt(1), rs.getString(2), rs.getDouble(3) / 100,
+						rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7),
+						AppDataSettings.languageBundle.getString("unpaidinvoicesPaidButton"),
+						AppDataSettings.languageBundle.getString("unpaidinvoicesShowinvoiceButton")));
 			}
 			rs.close();
 			st.close();

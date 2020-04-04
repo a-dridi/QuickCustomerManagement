@@ -51,6 +51,8 @@ public class MainWindowController implements Initializable {
 	@FXML
 	private Button showInvoicesFolderButton = new Button();
 	@FXML
+	private Button showAllCustomersButton = new Button();
+	@FXML
 	private Button settingsButton = new Button();
 	@FXML
 	private Button emailConfigurationButton = new Button();
@@ -129,6 +131,7 @@ public class MainWindowController implements Initializable {
 		this.unpaidInvoiceCustomersurname.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceCustomersurnameHeader"));
 		this.unpaidInvoiceCustomerpaybutton.setText(AppDataSettings.languageBundle.getString("unpaidinvoicePaidButtonHeader"));
 		this.unpaidInvoiceCustomershowinvoicebutton.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceShowinvoiceButtonHeader"));
+		this.showAllCustomersButton.setText(AppDataSettings.languageBundle.getString("showAllCustomerButtonHeader"));
 
 	}
 
@@ -300,6 +303,24 @@ public class MainWindowController implements Initializable {
 
 				}
 			}
+		}
+	}
+	
+	@FXML
+	public void handleOpenCustomersView() {
+		Parent root;
+		try {
+			root = FXMLLoader.load(getClass().getResource("/QuickCustomerManagment/ViewCustomer.fxml"));
+			Stage customersviewWindow = new Stage();
+			Scene scene = new Scene(root);
+			scene.getStylesheets().add("/styles/Styles.css");
+			customersviewWindow.setTitle(AppDataSettings.languageBundle.getString("allcustomersWindowHeaderTxt"));
+			customersviewWindow.setScene(scene);
+			customersviewWindow.show();
+
+		} catch (IOException ex) {
+			Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+			ErrorReport.reportException(ex);
 		}
 	}
 

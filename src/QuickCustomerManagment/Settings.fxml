@@ -13,14 +13,14 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="804.0" prefWidth="806.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="QuickCustomerManagment.SettingsController">
+<AnchorPane id="AnchorPane" prefHeight="814.0" prefWidth="806.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="QuickCustomerManagment.SettingsController">
    <children>
       <Text fx:id="settingsHeader" fill="#751c1ced" layoutX="273.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Settings" textAlignment="CENTER" wrappingWidth="273.13671875">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Text>
-      <VBox layoutX="14.0" layoutY="57.0" prefHeight="731.0" prefWidth="785.0">
+      <VBox layoutX="14.0" layoutY="57.0" prefHeight="742.0" prefWidth="785.0">
          <children>
             <HBox prefHeight="46.0" prefWidth="795.0">
                <children>
@@ -30,6 +30,24 @@
                      </font>
                   </Text>
                   <ComboBox fx:id="defaultcurrencySettingsCombobox" prefWidth="581.0" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="15.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox prefHeight="46.0" prefWidth="795.0">
+               <children>
+                  <Text fx:id="companylogoSettingsDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Company Logo: " wrappingWidth="190.13671875">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="companylogopath" prefHeight="25.0" prefWidth="453.0">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                  </TextField>
+                  <Button fx:id="opencompanylogoButton" mnemonicParsing="false" onAction="#handleOpenCompanyLogo" prefHeight="25.0" prefWidth="116.0" text="Open" />
                </children>
             </HBox>
             <VBox prefHeight="633.0" prefWidth="785.0" style="-fx-border-color: brown;">
@@ -142,14 +160,14 @@
                         <TextField fx:id="companyDetailsCompanywebsiteField" prefHeight="25.0" prefWidth="586.0" />
                      </children>
                   </HBox>
-                  <HBox prefHeight="92.0" prefWidth="795.0">
+                  <HBox prefHeight="62.0" prefWidth="753.0">
                      <children>
-                        <Text fx:id="companyDetailsCompanyadditionalinfoDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Additional Info (bank details, foot print, etc.):" wrappingWidth="190.13671875">
+                        <Text fx:id="companyDetailsCompanyadditionalinfoDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Additional Info (bank details, foot print, etc.):" wrappingWidth="229.13671875">
                            <font>
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Text>
-                        <TextArea fx:id="companyDetailsCompanyadditionalinfoTextarea" prefHeight="73.0" prefWidth="581.0" />
+                        <TextArea fx:id="companyDetailsCompanyadditionalinfoTextarea" prefHeight="0.0" prefWidth="523.0" />
                      </children>
                   </HBox>
                </children>
@@ -173,7 +191,7 @@
                   <Insets bottom="15.0" />
                </VBox.margin>
             </HBox>
-            <BorderPane prefHeight="65.0" prefWidth="785.0">
+            <BorderPane prefHeight="68.0" prefWidth="785.0">
                <center>
                   <Button fx:id="savesettingsButton" mnemonicParsing="false" onAction="#handleSaveSettings" prefHeight="39.0" prefWidth="177.0" style="-fx-background-color: green;" text="Save" textFill="WHITE" BorderPane.alignment="CENTER">
                      <BorderPane.margin>

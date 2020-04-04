@@ -107,6 +107,7 @@
                         <Insets left="15.0" right="25.0" />
                      </HBox.margin>
                   </Button>
+                  <Button fx:id="showAllCustomersButton" mnemonicParsing="false" onAction="#handleOpenCustomersView" prefHeight="37.0" prefWidth="160.0" text="All customers" />
                </children>
                <padding>
                   <Insets bottom="10.0" top="10.0" />
