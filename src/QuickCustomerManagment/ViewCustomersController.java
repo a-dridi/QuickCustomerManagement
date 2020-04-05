@@ -48,7 +48,7 @@ public class ViewCustomersController implements Initializable {
 		if (customersList != null && customersList.size() > 0) {
 			this.customerAmountText.setText(AppDataSettings.languageBundle
 					.getString("allcustomersWindowCustomerAmountTxt").replace("--%--", "" + customersList.size()));
-			customersTableData.addAll(loadData.getAllCustomers());
+			customersTableData.addAll(customersList);
 
 		} else {
 			this.customerAmountText.setText(" - ");

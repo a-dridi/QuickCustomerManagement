@@ -27,6 +27,8 @@ import java.util.Observable;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -405,20 +407,10 @@ public class NewInvoiceController implements Initializable {
 					this.noteinvoicefield.getText());
 			Locale locale = Locale.getDefault();
 			System.out.println("Invoice created at: " + createdInvoicePDFPath);
-			System.out.println("Send invoice to: " + this.selectedInvoiceCustomer.getEmail());
-			String emailStatus = sendInvoiceEmail(INVOICEID, this.customerFirstname, this.customerLastname,
+			Runnable sendEmailJob = new SendInvoiceEmail(INVOICEID, this.customerFirstname, this.customerLastname,
 					this.selectedInvoiceCustomer.getEmail(), (double) (sumParsed), this.currencyinvoicecombobox.getSelectionModel().getSelectedItem().toString(), locale.getCountry(),
 					createdInvoicePDFPath);
-			if (emailStatus.isEmpty()) {
-				System.out.println("Invoice email was sent. ");
-			} else {
-				System.out.println("Invoice could NOT be sent. ");
-				alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle(AppDataSettings.languageBundle.getString("emailsendingerrorWindowHeader").toUpperCase());
-				alert.setContentText(emailStatus);
-				alert.show();
-
-			}
+			AppDataSettings.executeEmailJob.submit(sendEmailJob);
 			invoiceItemsData.clear();
 		}
 	}
@@ -705,115 +697,5 @@ public class NewInvoiceController implements Initializable {
 				});
 
 		return invoiceTable;
-	}
-
-	/**
-	 * Send Invoice as an email with the defined settings in the table appsettings
-	 * (MailSettingsController)
-	 * 
-	 * @return empty string, if email could be sent successfully. Otherwise the
-	 *         error message.
-	 */
-	public String sendInvoiceEmail(int invoiceId, String customerForename, String customerSurname, String customerEmail,
-			double invoiceamount, String currencyiso, String languageCode, String relativeInvoiceFilePath) {
-		Optional<String> attachmentFilePath = Optional.ofNullable(relativeInvoiceFilePath);
-		if (attachmentFilePath.isEmpty() || attachmentFilePath.get().length() < 5) {
-			return "Invoice pdf could not be created. Please check your invoices folder.";
-		}
-
-		String emailSender = this.loadData.getAppsettings().get("emailEmailaddress");
-		String emailHostString = this.loadData.getAppsettings().get("emailHost");
-		String emailPortString = this.loadData.getAppsettings().get("emailPort");
-		InvoiceMailAuthenticator authentication = new InvoiceMailAuthenticator();
-
-		try {
-			if (emailHostString.isEmpty() || authentication.getPasswordAuthentication() == null
-					|| customerEmail.isEmpty()) {
-				return "Please configure and enter all the email settings in the email configuration.";
-			}
-		} catch (NullPointerException e) {
-			Logger.getLogger(NewInvoiceController.class.getName()).log(Level.SEVERE, null, e);
-			return "Please configure and enter all the email settings in the email configuration.";
-		}
-
-		Properties properties = System.getProperties();
-		properties.setProperty("mail.smtp.host", emailHostString);
-		try {
-			Integer portParsed = Integer.valueOf(emailPortString);
-			if (portParsed == 465) {
-				properties.setProperty("mail.smtp.port", emailPortString);
-				properties.setProperty("mail.smtp.auth", "true");
-				properties.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-
-			} else if (portParsed == 587) {
-				properties.setProperty("mail.smtp.starttls.enable", "true");
-				properties.setProperty("mail.smtp.auth", "true");
-
-			} else if (portParsed == 25) {
-				properties.setProperty("mail.smtp.port", emailPortString);
-				properties.setProperty("mail.smtp.auth", "true");
-
-			} else {
-				throw new NumberFormatException();
-			}
-		} catch (NumberFormatException e) {
-			properties.setProperty("mail.smtp.starttls.enable", "false");
-			properties.setProperty("mail.smtp.port", "25");
-
-		}
-
-		Session session = Session.getDefaultInstance(properties, authentication);
-
-		try {
-			Message invoiceMessage = new MimeMessage(session);
-			// invoiceMessage.setFrom(new InternetAddress(emailUsernameString + "@" +
-			// emailHostString));
-			if (this.loadData.getAppsettings().get("invoiceCompanyname").equals("")
-					|| this.loadData.getAppsettings().get("invoiceCompanyname").equals(".")) {
-				invoiceMessage.setFrom(new InternetAddress(emailSender));
-			} else {
-				invoiceMessage.setFrom(
-						new InternetAddress(emailSender, this.loadData.getAppsettings().get("invoiceCompanyname")));
-			}
-			invoiceMessage.addRecipient(Message.RecipientType.TO, new InternetAddress(customerEmail));
-			invoiceMessage.setSubject(AppDataSettings.languageBundle.getString("invoicemailNewInvoiceSubjectText")
-					.replace("--%--", "" + invoiceId));
-			Multipart messageParts = new MimeMultipart();
-			// Body email
-			BodyPart messageBodyPart = new MimeBodyPart();
-			messageBodyPart.setText(AppDataSettings.languageBundle.getString("invoicemailEmailtextgreetingText")
-					.replace("--%--", customerForename + " " + customerSurname)
-					+ "\n\n"
-					+ AppDataSettings.languageBundle.getString("invoicemailEmailtextcontentText")
-							.replace("--%1--", "" + invoiceId)
-							.replace("--%2--", String.format("%.2f " + currencyiso, invoiceamount, Locale.US))
-					+ "\n\n" + AppDataSettings.languageBundle.getString("invoicemailEmailtextendgreetingsText") + "\n"
-					+ this.loadData.getAppsettings().get("emailForenameSurname") + "\n\n"
-					+ this.loadData.getAppsettings().get("invoiceCompanyname") + "\n"
-					+ this.loadData.getAppsettings().get("invoiceCompanystreet") + "\n"
-					+ this.loadData.getAppsettings().get("invoiceCompanypostcode").trim() + " "
-					+ this.loadData.getAppsettings().get("invoiceCompanycity") + "\n"
-					+ this.loadData.getAppsettings().get("invoiceCompanycountry") + "\n\n"
-					+ this.loadData.getAppsettings().get("invoiceCompanytelephone") + "\n"
-					+ this.loadData.getAppsettings().get("invoiceCompanyemail") + "\n"
-					+ this.loadData.getAppsettings().get("invoiceCompanywebsite") + "\n");
-
-			messageParts.addBodyPart(messageBodyPart);
-			// Attachment email
-			DataSource attachmentSource = new FileDataSource(attachmentFilePath.get());
-			messageBodyPart = new MimeBodyPart();
-			messageBodyPart.setDataHandler(new DataHandler(attachmentSource));
-			messageBodyPart.setFileName(
-					AppDataSettings.languageBundle.getString("invoicefilenameHeaderText") + invoiceId + ".pdf");
-			messageParts.addBodyPart(messageBodyPart);
-
-			invoiceMessage.setContent(messageParts);
-			Transport.send(invoiceMessage);
-			return "";
-		} catch (Exception e) {
-			Logger.getLogger(NewInvoiceController.class.getName()).log(Level.SEVERE, null, e);
-			return AppDataSettings.languageBundle.getString("invoicemailerrorEmailNotSentText") + ": " + e.getCause()
-					+ " - " + e.getMessage();
-		}
 	}
 }

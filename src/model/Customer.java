@@ -81,6 +81,7 @@ public class Customer {
 
 						root = FXMLLoader.load(getClass().getResource("/QuickCustomerManagment/EditCustomer.fxml"));
 						Stage editcustomerWindow = new Stage();
+						EditCustomerController.editCustomerWindow = editcustomerWindow;
 						Scene scene = new Scene(root);
 						scene.getStylesheets().add("/styles/Styles.css");
 						editcustomerWindow

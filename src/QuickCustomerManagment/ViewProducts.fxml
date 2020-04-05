@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="AnchorPane" prefHeight="589.0" prefWidth="878.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="QuickCustomerManagment.ViewProductsController">
+    <children>
+      <VBox prefHeight="589.0" prefWidth="878.0">
+         <children>
+            <BorderPane prefHeight="63.0" prefWidth="878.0">
+               <center>
+                  <Text fx:id="WindowHeaderTitle" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="All Products" textAlignment="CENTER" wrappingWidth="298.13671875" BorderPane.alignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                     <BorderPane.margin>
+                        <Insets left="60.0" />
+                     </BorderPane.margin>
+                  </Text>
+               </center>
+               <padding>
+                  <Insets right="30.0" />
+               </padding>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </BorderPane>
+            <VBox maxWidth="1.7976931348623157E308" prefHeight="462.0" prefWidth="868.0">
+               <children>
+                  <TableView fx:id="productsTable" maxWidth="1.7976931348623157E308" prefHeight="460.0" prefWidth="838.0">
+                     <VBox.margin>
+                        <Insets left="15.0" right="15.0" />
+                     </VBox.margin>
+                  </TableView>
+               </children>
+               <VBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="10.0" />
+               </padding>
+            </VBox>
+            <HBox prefHeight="66.0" prefWidth="878.0" style="-fx-background-color: #ffd382;">
+               <children>
+                  <BorderPane maxWidth="1.7976931348623157E308" prefHeight="34.0" prefWidth="879.0">
+                     <left>
+                        <Text fx:id="productsAmountText" strokeType="OUTSIDE" strokeWidth="0.0" text="Developed by a.dridi (github.com/a-dridi)" wrappingWidth="265.13671875" BorderPane.alignment="CENTER">
+                           <BorderPane.margin>
+                              <Insets left="25.0" />
+                           </BorderPane.margin>
+                        </Text>
+                     </left>
+                  </BorderPane>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+    </children>
+</AnchorPane>

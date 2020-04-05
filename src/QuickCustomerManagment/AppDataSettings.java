@@ -29,6 +29,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Supplier;
 
 import org.sqlite.SQLiteException;
@@ -36,11 +38,13 @@ import org.sqlite.SQLiteException;
 import javafx.scene.control.Alert;
 import model.Customer;
 import model.Invoice;
+import model.Products;
 import model.UnpaidInvoice;
 
 /**
  * Saves and loads Data (such as Currencies) and Settings that are needed for
- * the application and startup of the application.
+ * the application and startup of the application. This class does also global
+ * functions for this application and background tasks (e.g.: sending email)
  *
  * @author
  */
@@ -51,7 +55,8 @@ public class AppDataSettings implements Serializable {
 	private Map<String, String> currencies = new TreeMap<>();
 	private List<String> countries = new ArrayList<>();
 	private Map<String, String> appsettings = new TreeMap<>();
-
+	// Add sending email job (runnable) to the thread pool to be executed.
+	public static ExecutorService executeEmailJob = Executors.newCachedThreadPool();
 	public static String INVOICESFILELOCATION = "invoices";
 
 	/**
@@ -901,6 +906,328 @@ public class AppDataSettings implements Serializable {
 			return false;
 		}
 	}
+
+	public List<Products> getAllProducts() {
+		List<Products> productsList = new ArrayList<Products>();
+		Connection c = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			int id = 0;
+			Statement st = c.createStatement();
+			String sql = "SELECT id, productname, priceperunit, availableamount, note FROM products";
+			ResultSet rs = st.executeQuery(sql);
+
+			while (rs != null && rs.next()) {
+				productsList.add(new Products(rs.getInt("id"), rs.getString("productname"),
+						rs.getDouble("priceperunit"), rs.getInt("availableamount"), rs.getString("note"),
+						AppDataSettings.languageBundle.getString("allproductsWindowEditButtonTxt"),
+						AppDataSettings.languageBundle.getString("allproductsWindowDeleteButtonTxt")));
+			}
+			rs.close();
+			st.close();
+			c.close();
+
+			return productsList;
+
+		} catch (Exception e) {
+			System.err.println("getAllProducts - " + e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "getAllProducts: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return null;
+		}
+	}
+
+	public Products getProductsById(Integer id) {
+		Products product;
+		Connection c = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+			String sql = "SELECT id, productname, priceperunit, availableamount, note FROM products where id = " + id;
+
+			ResultSet rs = st.executeQuery(sql);
+
+			product = new Products(rs.getInt("id"), rs.getString("productname"), rs.getDouble("priceperunit"),
+					rs.getInt("availableamount"), rs.getString("note"));
+
+			rs.close();
+			st.close();
+			c.close();
+
+			return product;
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "getProductsById: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return null;
+		}
+	}
+	
+	public Integer getProductsAvailableamountById(Integer id) {
+		Products product;
+		Connection c = null;
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+			String sql = "SELECT availableamount FROM products where id = " + id;
+
+			ResultSet rs = st.executeQuery(sql);
+			Integer availableamount = rs.getInt("availableamount");
+
+			rs.close();
+			st.close();
+			c.close();
+
+			return availableamount;
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "getProductsAvailableamountById: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return null;
+		}
+	}
+
+	/**
+	 * Add new product that can be added then into the text fields of an invoice pos
+	 * item
+	 * 
+	 * @param availableamount Set to "-1" if there is unlimited amount
+	 */
+	public boolean addNewProducts(String productname, Double priceperunit, Integer availableamount, String note) {
+		Connection c = null;
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+
+			String sql = "INSERT INTO products (productname, priceperunit, availableamount, note) VALUES ('"
+					+ productname + "', " + priceperunit + ", " + availableamount + ", '" + note + "')";
+			st.executeUpdate(sql);
+			st.close();
+			c.commit();
+			c.close();
+
+			return true;
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "addNewProducts Error: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	public boolean updateProducts(Integer id, String productname, Double priceperunit, Integer availableamount,
+			String note) {
+		Connection c = null;
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+
+			String sql = "UPDATE products SET productname='" + productname + "', priceperunit = " + priceperunit
+					+ ", availableamount = " + availableamount + ", note = '" + note + "' WHERE id = " + id;
+
+			int ret = st.executeUpdate(sql);
+			st.close();
+			c.commit();
+			c.close();
+			if (ret > 0) {
+				// Product updated
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "updateProducts Error: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	public boolean deleteProductsById(Integer id) {
+		Connection c = null;
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+
+			String sql = "DELETE FROM products WHERE id = " + id;
+
+			st.executeUpdate(sql);
+			st.close();
+			c.commit();
+			c.close();
+
+			return true;
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "deleteProductsById Error: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return false;
+		}
+	}
+
+	public boolean updateProductsPriceperunitById(Integer id, Double priceperunit) {
+		Connection c = null;
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+
+			String sql = "UPDATE products SET priceperunit = " + priceperunit + " WHERE id = " + id;
+
+			int ret = st.executeUpdate(sql);
+			st.close();
+			c.commit();
+			c.close();
+			if (ret > 0) {
+				// Product updated
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "updateProductsPriceperunitById Error: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return false;
+		}
+	}
+	
+	public boolean updateProductsAvailableamountById(Integer id, Integer availableamount) {
+		Connection c = null;
+
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+
+			String sql = "UPDATE products SET availableamount = " + availableamount + " WHERE id = " + id;
+
+			int ret = st.executeUpdate(sql);
+			st.close();
+			c.commit();
+			c.close();
+			if (ret > 0) {
+				// Product updated
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "updateProductsAvailableamountById Error: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return false;
+		}
+	}
+	
+	/**
+	 * Change the value of the available amount of a product if the available amount is not "-1" (value for unlimited). Use this when a product item was saved in the database.
+	 * 
+	 * @param id
+	 * @param changeAvailableamount Positive value: increase available amount. Negative value: decrease available amount.
+	 * @return
+	 */
+	public boolean changeProductsAvailableamountById(Integer id, Integer changeAvailableamount) {
+		Connection c = null;
+		Integer availableamountOld = 0; //the current available amount calculated from the present value and the parameter "availableamount"
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+			String sql = "SELECT availableamount FROM products WHERE id = " + id;
+			ResultSet rs = st.executeQuery(sql);
+			availableamountOld = rs.getInt("availableamount");
+			rs.close();
+			
+			if(availableamountOld==-1) {
+				st.close();
+				c.commit();
+				c.close();
+				return true;
+			}
+			
+		    sql = "UPDATE products SET availableamount = " + (availableamountOld + changeAvailableamount) + " WHERE id = " + id;
+			int ret = st.executeUpdate(sql);
+			st.close();
+			c.commit();
+			c.close();
+			if (ret > 0) {
+				// Product updated
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "changeProductsAvailableamountById Error: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return false;
+		}
+	}
+	
 
 	public Map<String, String> getAppsettings() {
 		return appsettings;
