@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ListChangeListener.Change;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -25,7 +27,7 @@ public class ViewCustomersController implements Initializable {
 	private TableView customersTable = new TableView();
 
 	public static ObservableList<Customer> customersTableData = FXCollections.observableArrayList();
-
+	private int customerAmount;
 	public TableColumn customerId;
 	public TableColumn customerCompanyname;
 	public TableColumn customerForename;
@@ -46,8 +48,9 @@ public class ViewCustomersController implements Initializable {
 		customersList = loadData.getAllCustomers();
 
 		if (customersList != null && customersList.size() > 0) {
+			this.customerAmount = customersList.size();
 			this.customerAmountText.setText(AppDataSettings.languageBundle
-					.getString("allcustomersWindowCustomerAmountTxt").replace("--%--", "" + customersList.size()));
+					.getString("allcustomersWindowCustomerAmountTxt").replace("--%--", "" + this.customerAmount));
 			customersTableData.addAll(customersList);
 
 		} else {
@@ -75,6 +78,7 @@ public class ViewCustomersController implements Initializable {
 		this.customersTable.getColumns().addAll(this.customerId, this.customerCompanyname, this.customerForename,
 				this.customerSurname, this.customerEmail, this.customerEditButton, this.customerDeleteButton);
 
+		loadCustomersTableListener();
 		loadWindowText();
 	}
 
@@ -87,7 +91,42 @@ public class ViewCustomersController implements Initializable {
 		this.customerSurname.setText(AppDataSettings.languageBundle.getString("allcustomersWindowSurenameTableTxt"));
 		this.customerEmail.setText(AppDataSettings.languageBundle.getString("allcustomersWindowEmailTableTxt"));
 		this.customerEditButton.setText(AppDataSettings.languageBundle.getString("allcustomersWindowEditButtonTxt"));
-		this.customerDeleteButton.setText(AppDataSettings.languageBundle.getString("allcustomersWindowDeleteButtonTxt"));
+		this.customerDeleteButton
+				.setText(AppDataSettings.languageBundle.getString("allcustomersWindowDeleteButtonTxt"));
+	}
+
+	public void loadCustomersTableListener() {
+		this.customersTableData.addListener(new ListChangeListener() {
+
+			@Override
+			public void onChanged(Change arg0) {
+				reloadDeletedCustomerAmountText();
+			}
+
+		});
+	}
+
+	public void reloadDeletedCustomerAmountText() {
+		try {
+			this.customerAmount = this.loadData.getAllCustomers().size();
+		} catch (NullPointerException e) {
+
+		}
+		this.customerAmountText.setText(AppDataSettings.languageBundle.getString("allcustomersWindowCustomerAmountTxt")
+				.replace("--%--", "" + this.customerAmount));
+	}
+	
+	/**
+	 * Reload customers table after editing a table row
+	 */
+	public static void reloadCustomers() {
+		customersTableData.clear();
+		try {
+			AppDataSettings reloadData = new AppDataSettings();
+		customersTableData.addAll(reloadData.getAllCustomers());
+		}catch(NullPointerException e) {
+			
+		}
 	}
 
 }

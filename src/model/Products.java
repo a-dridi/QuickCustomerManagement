@@ -17,10 +17,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.input.InputMethodEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class Products implements Serializable {
 
@@ -44,34 +47,42 @@ public class Products implements Serializable {
 
 		this.priceperunitField = new TextField();
 		this.priceperunitField.setId(id + "");
-		this.priceperunitField.setOnInputMethodTextChanged(new EventHandler<InputMethodEvent>() {
+		this.priceperunitField.setText("" + priceperunit);
+		this.priceperunitField.setOnKeyReleased(new EventHandler<KeyEvent>() {
 
 			@Override
-			public void handle(InputMethodEvent arg0) {
+			public void handle(KeyEvent arg0) {
 				AppDataSettings updateDatabase = new AppDataSettings();
 
 				TextField selectedTextField = (TextField) arg0.getSource();
 				try {
 					Integer editedProductsIdParsed = Integer.parseInt(selectedTextField.getId());
-					Double newPriceperunitParsed = Double.parseDouble(selectedTextField.getText());
+					Double newPriceperunitParsed = Double.parseDouble((selectedTextField.getText()).replace(",", "."));
 					updateDatabase.updateProductsPriceperunitById(editedProductsIdParsed, newPriceperunitParsed);
 					ViewProductsController.productsTableData.clear();
 					ViewProductsController.productsTableData.addAll(updateDatabase.getAllProducts());
 				} catch (NumberFormatException e) {
 					System.out.println("" + e);
-					ErrorReport.reportException(e);
+					// ErrorReport.reportException(e);
+					if (selectedTextField.getText() != null && !selectedTextField.getText().equals("")
+							&& !selectedTextField.getText().equals(" ")) {
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle(AppDataSettings.languageBundle.getString("errorWindowHeader").toUpperCase());
+						alert.setContentText(AppDataSettings.languageBundle.getString("allproductsNoNumber"));
+						alert.show();
+					}
 				}
 			}
 		});
 
 		this.availableamountField = new TextField();
 		this.availableamountField.setId(id + "");
-		this.availableamountField.setOnInputMethodTextChanged(new EventHandler<InputMethodEvent>() {
+		this.availableamountField.setText("" + availableamount);
+		this.availableamountField.setOnKeyReleased(new EventHandler<KeyEvent>() {
 
 			@Override
-			public void handle(InputMethodEvent arg0) {
+			public void handle(KeyEvent arg0) {
 				AppDataSettings updateDatabase = new AppDataSettings();
-
 				TextField selectedTextField = (TextField) arg0.getSource();
 				try {
 					Integer editedProductsIdParsed = Integer.parseInt(selectedTextField.getId());
@@ -80,6 +91,13 @@ public class Products implements Serializable {
 					ViewProductsController.productsTableData.clear();
 					ViewProductsController.productsTableData.addAll(updateDatabase.getAllProducts());
 				} catch (NumberFormatException | NullPointerException e) {
+					if (selectedTextField.getText() != null && !selectedTextField.getText().equals("")
+							&& !selectedTextField.getText().equals(" ")) {
+						Alert alert = new Alert(Alert.AlertType.ERROR);
+						alert.setTitle(AppDataSettings.languageBundle.getString("errorWindowHeader").toUpperCase());
+						alert.setContentText(AppDataSettings.languageBundle.getString("allproductsNoNumber"));
+						alert.show();
+					}
 				}
 			}
 		});

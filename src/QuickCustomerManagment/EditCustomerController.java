@@ -158,6 +158,8 @@ public class EditCustomerController implements Initializable {
 				alert.setTitle(AppDataSettings.languageBundle.getString("okWindowHeader").toUpperCase());
 				alert.setContentText(AppDataSettings.languageBundle.getString("okWindowCustomerUpdated"));
 				alert.show();
+				
+				ViewCustomersController.reloadCustomers();
 			} else {
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle(AppDataSettings.languageBundle.getString("errorWindowHeader").toUpperCase());

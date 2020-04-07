@@ -151,7 +151,7 @@ public class AppDataSettings implements Serializable {
 				st.execute(sql);
 				st.close();
 				st = c.createStatement();
-				sql = "CREATE TABLE IF NOT EXISTS customer " + "(id INTEGER PRIMARY KEY, " + "email TEXT,"
+				sql = "CREATE TABLE IF NOT EXISTS customer " + "(id INTEGER PRIMARY KEY, " + "email TEXT UNIQUE,"
 						+ "forename TEXT," + "lastname TEXT," + "companyname TEXT," + "taxnumber TEXT," + "street TEXT,"
 						+ "zipcode INTEGER," + "city TEXT," + "county TEXT," + "country TEXT," + "currencyiso TEXT,"
 						+ "note TEXT" + ")";
@@ -169,7 +169,7 @@ public class AppDataSettings implements Serializable {
 				st = c.createStatement();
 				// invoicepos priceperunit and sumprice are in cent
 				sql = "CREATE TABLE IF NOT EXISTS invoicepos " + "(globalid INTEGER PRIMARY KEY, id INT NOT NULL, "
-						+ "itemname TEXT NOT NULL," + "unit REAL, " + "priceperunit REAL,"
+						+ "itemname TEXT NOT NULL," + "unit INT, " + "priceperunit REAL,"
 						+ "sumprice REAL, invoiceid INT," + "FOREIGN KEY (invoiceid) REFERENCES invoice (id)" + ")";
 				st.execute(sql);
 				st.close();
@@ -356,7 +356,7 @@ public class AppDataSettings implements Serializable {
 					+ "', taxnumber = '" + taxnumber + "', street = '" + streetclientfield + "', zipcode = "
 					+ zipcodeclientfield + ", city = '" + cityclientfield + "', county = '" + countyclientfield
 					+ "', country = '" + countryclientcombobox + "', currencyiso = '" + currencyclientcombobox
-					+ "', note = '" + noteclienttextarea + "'";
+					+ "', note = '" + noteclienttextarea + "'" + "WHERE email = '" + customerEmail +"'";
 
 			st.executeUpdate(sql);
 			st.close();
@@ -420,7 +420,7 @@ public class AppDataSettings implements Serializable {
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
-			String sql = "DELETE FROM customer WHERE id = ";
+			String sql = "DELETE FROM customer WHERE id = " + id;
 			st.executeUpdate(sql);
 			st.close();
 			c.commit();
@@ -447,7 +447,7 @@ public class AppDataSettings implements Serializable {
 	 * @param priceperunit Amount will be saved in cent in the database
 	 * @param sumprice     Amount will be saved in cent in the database
 	 */
-	public boolean addNewInvoicePosItem(Integer id, String itemname, Double unit, Double priceperunit, Double sumprice,
+	public boolean addNewInvoicePosItem(Integer id, String itemname, Integer unit, Double priceperunit, Double sumprice,
 			Integer invoiceId) {
 		Connection c = null;
 
@@ -975,7 +975,7 @@ public class AppDataSettings implements Serializable {
 			return null;
 		}
 	}
-	
+
 	public Integer getProductsAvailableamountById(Integer id) {
 		Products product;
 		Connection c = null;
@@ -1142,7 +1142,7 @@ public class AppDataSettings implements Serializable {
 			return false;
 		}
 	}
-	
+
 	public boolean updateProductsAvailableamountById(Integer id, Integer availableamount) {
 		Connection c = null;
 
@@ -1176,17 +1176,21 @@ public class AppDataSettings implements Serializable {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Change the value of the available amount of a product if the available amount is not "-1" (value for unlimited). Use this when a product item was saved in the database.
+	 * Change the value of the available amount of a product if the available amount
+	 * is not "-1" (value for unlimited). Use this when a product item was saved in
+	 * the database.
 	 * 
 	 * @param id
-	 * @param changeAvailableamount Positive value: increase available amount. Negative value: decrease available amount.
+	 * @param changeAvailableamount Positive value: increase available amount.
+	 *                              Negative value: decrease available amount.
 	 * @return
 	 */
 	public boolean changeProductsAvailableamountById(Integer id, Integer changeAvailableamount) {
 		Connection c = null;
-		Integer availableamountOld = 0; //the current available amount calculated from the present value and the parameter "availableamount"
+		Integer availableamountOld = 0; // the current available amount calculated from the present value and the
+										// parameter "availableamount"
 		try {
 			Class.forName("org.sqlite.JDBC");
 			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
@@ -1196,15 +1200,16 @@ public class AppDataSettings implements Serializable {
 			ResultSet rs = st.executeQuery(sql);
 			availableamountOld = rs.getInt("availableamount");
 			rs.close();
-			
-			if(availableamountOld==-1) {
+
+			if (availableamountOld == -1) {
 				st.close();
 				c.commit();
 				c.close();
 				return true;
 			}
-			
-		    sql = "UPDATE products SET availableamount = " + (availableamountOld + changeAvailableamount) + " WHERE id = " + id;
+
+			sql = "UPDATE products SET availableamount = " + (availableamountOld + changeAvailableamount)
+					+ " WHERE id = " + id;
 			int ret = st.executeUpdate(sql);
 			st.close();
 			c.commit();
@@ -1227,7 +1232,72 @@ public class AppDataSettings implements Serializable {
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Change the value of the available amount of a product if the available amount
+	 * is not "-1" (value for unlimited). Use this when a product item was saved in
+	 * the database.
+	 * 
+	 * @param productname
+	 * @param changeAvailableamount Positive value: increase available amount.
+	 *                              Negative value: decrease available amount.
+	 * @return
+	 */
+	public boolean changeProductsAvailableamountByProductname(String productname, Integer changeAvailableamount) {
+		Connection c = null;
+		Integer availableamountOld = 0; // the current available amount calculated from the present value and the
+										// parameter "availableamount"
+		try {
+			Class.forName("org.sqlite.JDBC");
+			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c.setAutoCommit(false);
+			Statement st = c.createStatement();
+			String sql = "SELECT availableamount FROM products WHERE productname = '" + productname + "'";
+			ResultSet rs = st.executeQuery(sql);
+			availableamountOld = rs.getInt("availableamount");
+			rs.close();
+
+			
+			if (availableamountOld == -1) {
+				st.close();
+				c.commit();
+				c.close();
+				return true;
+			}
+			
+			st.close();
+			st = c.createStatement();
+			
+			int availableamountNew = (availableamountOld + changeAvailableamount);
+			if (availableamountNew > 0) {
+				sql = "UPDATE products SET availableamount = " + availableamountNew + " WHERE productname = '"
+						+ productname + "'";
+			} else {
+				sql = "UPDATE products SET availableamount = " + 0 + " WHERE productname = '" + productname + "'";
+			}
+			
+			int ret = st.executeUpdate(sql);
+			st.close();
+			c.commit();
+			c.close();
+			if (ret > 0) {
+				// Product updated
+				return true;
+			} else {
+				return false;
+			}
+
+		} catch (Exception e) {
+			System.err.println(e.getClass().getName() + ": " + e.getMessage());
+			errorMessage = "changeProductsAvailableamountByProductname Error: " + e.getMessage();
+			try {
+				c.close();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			return false;
+		}
+	}
 
 	public Map<String, String> getAppsettings() {
 		return appsettings;

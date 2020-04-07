@@ -4,8 +4,13 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
@@ -13,10 +18,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import model.Customer;
 import model.Products;
 
-public class ViewProductsController implements Initializable{
+public class ViewProductsController implements Initializable {
 
 	private AppDataSettings loadData = new AppDataSettings();
 
@@ -35,23 +41,15 @@ public class ViewProductsController implements Initializable{
 	@FXML
 	private Text WindowHeaderTitle = new Text();
 	@FXML
-	private Text productsAmountText = new Text();
+	public Text productsAmountText = new Text();
+	public static List productsList;
+	public int productsAmount = 0;
 
-	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		List productsList = null;
 
 		productsList = loadData.getAllProducts();
-
-		if (productsList != null && productsList.size() > 0) {
-			this.productsAmountText.setText(AppDataSettings.languageBundle
-					.getString("allproductsWindowProductsAmountTxt").replace("--%--", "" + productsList.size()));
-			productsTableData.addAll(productsList);
-
-		} else {
-			this.productsAmountText.setText(" - ");
-		}
+		loadProducts();
 
 		this.productsId = new TableColumn();
 		this.productsProductname = new TableColumn();
@@ -71,19 +69,69 @@ public class ViewProductsController implements Initializable{
 		this.productsTable.setItems(productsTableData);
 		this.productsTable.getColumns().addAll(this.productsId, this.productsProductname, this.productsPriceperunit,
 				this.productsAvailableamount, this.productsEditButton, this.productsDeleteButton);
-		
+
 		loadWindowText();
+		loadProductsTableListener();
+
 	}
-	
+
 	private void loadWindowText() {
 		this.WindowHeaderTitle.setText(AppDataSettings.languageBundle.getString("allproductsWindowHeaderTxt"));
 		this.productsId.setText(AppDataSettings.languageBundle.getString("allproductsWindowIdTableTxt"));
 		this.productsProductname
 				.setText(AppDataSettings.languageBundle.getString("allproductsWindowProductnameTableTxt"));
-		this.productsPriceperunit.setText(AppDataSettings.languageBundle.getString("allproductsWindowPriceperunitTableTxt"));
-		this.productsAvailableamount.setText(AppDataSettings.languageBundle.getString("allproductsWindowAvailableamountTableTxt"));
+		this.productsPriceperunit
+				.setText(AppDataSettings.languageBundle.getString("allproductsWindowPriceperunitTableTxt"));
+		this.productsAvailableamount
+				.setText(AppDataSettings.languageBundle.getString("allproductsWindowAvailableamountTableTxt"));
 		this.productsEditButton.setText(AppDataSettings.languageBundle.getString("allproductsWindowEditButtonTxt"));
 		this.productsDeleteButton.setText(AppDataSettings.languageBundle.getString("allproductsWindowDeleteButtonTxt"));
+	}
+
+	public void loadProducts() {
+
+		if (productsList != null && productsList.size() > 0) {
+			this.productsAmount = productsList.size();
+			this.productsAmountText.setText(AppDataSettings.languageBundle
+					.getString("allproductsWindowProductsAmountTxt").replace("--%--", "" + this.productsAmount));
+			productsTableData.addAll(productsList);
+
+		} else {
+			this.productsAmountText.setText(" - ");
+		}
+		
+	}
+	
+	/**
+	 * Reload products table after editing a table row
+	 */
+	public static void reloadProducts() {
+		System.out.println("Reload products");
+		productsTableData.clear();
+		AppDataSettings reloadData = new AppDataSettings();
+		productsList = reloadData.getAllProducts();
+		productsTableData.addAll(productsList);
+	}
+
+	public void loadProductsTableListener() {
+		this.productsTableData.addListener(new ListChangeListener() {
+
+			@Override
+			public void onChanged(Change arg0) {
+				reloadDeletedProductsAmountText();
+			}
+
+		});
+	}
+
+	public void reloadDeletedProductsAmountText() {
+		try {
+			this.productsAmount = this.loadData.getAllProducts().size();
+		} catch (NullPointerException e) {
+
+		}
+		this.productsAmountText.setText(AppDataSettings.languageBundle.getString("allproductsWindowProductsAmountTxt")
+				.replace("--%--", "" + this.productsAmount));
 	}
 
 }

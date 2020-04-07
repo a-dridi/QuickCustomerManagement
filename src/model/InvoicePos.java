@@ -18,7 +18,7 @@ public class InvoicePos implements Serializable {
 
 	private Integer id;
 	private String itemname;
-	private Double unit;
+	private Integer unit;
 	// later converted into cent, when it is saved into the db:
 	private double priceperunit;
 	// later converted into cent, when it is saved into the db:
@@ -30,7 +30,7 @@ public class InvoicePos implements Serializable {
 
 	}
 
-	public InvoicePos(Integer id, String itemname, Double unit, double priceperunit, double sumprice, Integer invoiceid) {
+	public InvoicePos(Integer id, String itemname, Integer unit, double priceperunit, double sumprice, Integer invoiceid) {
 		super();
 		this.id = id;
 		this.itemname = itemname;
@@ -41,7 +41,7 @@ public class InvoicePos implements Serializable {
 		
 	}
 
-	public InvoicePos(Integer id, String itemname, Double unit, double priceperunit, double sumprice) {
+	public InvoicePos(Integer id, String itemname, Integer unit, double priceperunit, double sumprice) {
 		super();
 		this.id = id;
 		this.itemname = itemname;
@@ -68,11 +68,11 @@ public class InvoicePos implements Serializable {
 		this.itemname = itemname;
 	}
 
-	public Double getUnit() {
+	public Integer getUnit() {
 		return unit;
 	}
 
-	public void setUnit(Double unit) {
+	public void setUnit(Integer unit) {
 		this.unit = unit;
 	}
 

@@ -95,6 +95,7 @@ public class EditProductsController implements Initializable {
 		
 		if (loadData.updateProducts(productsId,this.productnameEditProductsField.getText(), priceperunit, availableamount, this.noteEditProductsField.getText())) {
 			this.editProductsWindow.close();
+			ViewProductsController.reloadProducts();
 
 			Alert alert = new Alert(Alert.AlertType.INFORMATION);
 			alert.setTitle(AppDataSettings.languageBundle.getString("okWindowHeader").toUpperCase());

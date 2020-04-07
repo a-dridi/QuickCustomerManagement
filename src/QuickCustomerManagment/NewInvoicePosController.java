@@ -1,8 +1,11 @@
 package QuickCustomerManagment;
 
+import java.beans.EventHandler;
 import java.net.URL;
 import java.text.ParseException;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.TreeMap;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -11,12 +14,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.InvoicePos;
+import model.Products;
 
 public class NewInvoicePosController implements Initializable {
+
+	@FXML
+	private ComboBox productTemplateSelect;
+	// Maps the value that is displayed in the combobox with the actual object
+	public static Map<String, Products> productsObjectTemplateString = new TreeMap<>();
+
 	@FXML
 	private TextField itemnameinvoiceposfield;
 	@FXML
@@ -26,6 +37,8 @@ public class NewInvoicePosController implements Initializable {
 	@FXML
 	private TextField itemsuminvoiceposfield;
 
+	@FXML
+	private Text templateDesc = new Text();
 	@FXML
 	private Text newinvoiceposHeader = new Text();
 	@FXML
@@ -38,7 +51,7 @@ public class NewInvoicePosController implements Initializable {
 	private Text suminvoiceposdesc = new Text();
 	@FXML
 	private Button addinvoiceitemButton = new Button();
-	
+
 	private AppDataSettings loadData;
 	public static Integer invoiceId;
 	public static Stage invoicePosWindow;
@@ -46,33 +59,69 @@ public class NewInvoicePosController implements Initializable {
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
 		loadData = new AppDataSettings();
+
+		// Load combobox with customized display string
+		for (Products product : loadData.getAllProducts()) {
+			StringBuilder displayString = new StringBuilder();
+			if (product.getAvailableamount() == -1) {
+				displayString.append(product.getProductname());
+				displayString.append(" - ");
+				displayString.append(AppDataSettings.languageBundle.getString("invoiceposUnlimitedamountText"));
+			} else {
+				displayString.append(product.getProductname());
+				displayString.append(" - ");
+				displayString.append(product.getAvailableamount());
+				displayString.append(" x");
+			}
+			productsObjectTemplateString.put(displayString.toString(), product);
+		}
+		for (String displayString : this.productsObjectTemplateString.keySet()) {
+			this.productTemplateSelect.getItems().add(displayString);
+		}
+
 		loadPriceInputListeners();
+		loadProductTemplateSelectListener();
 		loadNewInvoicePosWindowText();
 	}
 
 	private void loadNewInvoicePosWindowText() {
+		this.templateDesc.setText(AppDataSettings.languageBundle.getString("invoiceposTemplateDescText"));
 		this.newinvoiceposHeader.setText(AppDataSettings.languageBundle.getString("invoiceposWindowTitleText"));
 		this.itemnameinvoiceposdesc.setText(AppDataSettings.languageBundle.getString("invoiceposWindowItemnameText"));
 		this.unitinvoiceposdesc.setText(AppDataSettings.languageBundle.getString("invoiceposWindowUnitText"));
-		this.priceperunitinvoiceposdesc.setText(AppDataSettings.languageBundle.getString("invoiceposWindowPriceperunitText"));
+		this.priceperunitinvoiceposdesc
+				.setText(AppDataSettings.languageBundle.getString("invoiceposWindowPriceperunitText"));
 		this.suminvoiceposdesc.setText(AppDataSettings.languageBundle.getString("invoiceposWindowSumText"));
 		this.addinvoiceitemButton.setText(AppDataSettings.languageBundle.getString("invoiceposWindowAddButtonText"));
 	}
-	
+
 	public void loadPriceInputListeners() {
 
 		this.itempriceperunitinvoiceposfield.textProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
-				updateInvoicePosSumFORPricePerUnit(arg2);
+			public void changed(ObservableValue<? extends String> observableObject, String oldValue, String newValue) {
+				updateInvoicePosSumFORPricePerUnit(newValue);
 			}
 		});
 
 		this.itemunitinvoiceposfield.textProperty().addListener(new ChangeListener<String>() {
 			@Override
-			public void changed(ObservableValue<? extends String> arg0, String arg1, String arg2) {
-				updateInvoicePosSumFORUnit(arg2);
+			public void changed(ObservableValue<? extends String> observableObject, String oldValue, String newValue) {
+				updateInvoicePosSumFORUnit(newValue);
 			}
+		});
+	}
+
+	public void loadProductTemplateSelectListener() {
+		this.productTemplateSelect.valueProperty().addListener(new ChangeListener<String>() {
+
+			@Override
+			public void changed(ObservableValue<? extends String> observableObject, String oldValue, String newValue) {
+				Products selectedProduct = NewInvoicePosController.productsObjectTemplateString.get(newValue);
+				updateInvoicePosItemname(selectedProduct.getProductname());
+				updateInvoicePosItemprice(""+selectedProduct.getPriceperunit());
+			}
+
 		});
 	}
 
@@ -95,14 +144,15 @@ public class NewInvoicePosController implements Initializable {
 	public void handleSaveInvoicePos(ActionEvent event) {
 
 		try {
-			Double unit = Double.parseDouble((itemunitinvoiceposfield.getText()));
+			Integer unit = Integer.valueOf((itemunitinvoiceposfield.getText()));
 			double priceperunit = Double.parseDouble((itempriceperunitinvoiceposfield.getText()).replace(',', '.'));
 			double sum = Double.parseDouble((itemsuminvoiceposfield.getText()).replace(',', '.'));
-			NewInvoiceController.invoiceItemsData
-					.add(new InvoicePos(NewInvoiceController.INVOICEPOSID, itemnameinvoiceposfield.getText(), unit, priceperunit, sum));
+			NewInvoiceController.invoiceItemsData.add(new InvoicePos(NewInvoiceController.INVOICEPOSID,
+					itemnameinvoiceposfield.getText(), unit, priceperunit, sum));
 
 			invoicePosWindow.close();
 			NewInvoiceController.INVOICEPOSID++;
+			this.productsObjectTemplateString.clear();
 
 		} catch (NumberFormatException e) {
 			Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -114,6 +164,8 @@ public class NewInvoicePosController implements Initializable {
 	}
 
 	/**
+	 * Changes the text field "sum" to newValue. Used for ChangeListener of "pricePerUnit" text field
+	 * 
 	 * Invoice sum calculated in cent, then convert to currency unit to display.
 	 */
 
@@ -141,6 +193,11 @@ public class NewInvoicePosController implements Initializable {
 		}
 	}
 
+	/**
+	 * Changes the text field "sum" to newValue. Used for ChangeListener of "unit" text field
+	 * 
+	 * @param newValue
+	 */
 	public void updateInvoicePosSumFORUnit(String newValue) {
 		try {
 			if (this.itemunitinvoiceposfield.getText() != null && newValue != null) {
@@ -167,4 +224,19 @@ public class NewInvoicePosController implements Initializable {
 		}
 	}
 
+	/**
+	 * Update text field "item name". Used for ChangeListener of combobox "template".
+	 * @param itemname
+	 */
+	public void updateInvoicePosItemname(String newValue) {
+		this.itemnameinvoiceposfield.setText(newValue);
+	}
+
+	/**
+	 * Update text field "item price" (Price per unit). Used for ChangeListener of combobox "template".
+	 * @param itemname
+	 */
+	public void updateInvoicePosItemprice(String newValue) {
+		this.itempriceperunitinvoiceposfield.setText(newValue);
+	}
 }

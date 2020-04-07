@@ -1,15 +1,5 @@
 package QuickCustomerManagment;
 
-import java.io.File;
-
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -17,21 +7,12 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Observable;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import com.itextpdf.text.BadElementException;
@@ -40,8 +21,6 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.Element;
-import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
@@ -49,7 +28,6 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import javafx.event.EventHandler;
 import javafx.beans.property.Property;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
@@ -57,6 +35,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -72,12 +51,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.text.Text;
-import javafx.stage.PopupWindow.AnchorLocation;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import model.Customer;
 import model.InvoicePos;
 
@@ -173,6 +149,12 @@ public class NewInvoiceController implements Initializable {
 
 	public static int CUSTOMERID = 0;
 	public static Stage addNewInvoiceWindow;
+	private int areaCodeParsed;
+	private Double netsumParsed = 0.;
+	private Double taxvalueParsed = 0.;
+	private Double sumParsed = 0.;
+	private String createdInvoicePDFPath;
+	public static boolean invoiceCreationProcessEnded;
 
 	public NewInvoiceController() {
 		this.loadData.loadAppSettings();
@@ -341,77 +323,148 @@ public class NewInvoiceController implements Initializable {
 			alert.setTitle(AppDataSettings.languageBundle.getString("errorWindowHeader").toUpperCase());
 			alert.setContentText(AppDataSettings.languageBundle.getString("errorNewInvoiceNoCustomerSelected"));
 			alert.show();
+			return;
 
 		} else {
-			for (InvoicePos item : invoiceItemsData) {
-				loadData.addNewInvoicePosItem(item.getId(), item.getItemname(), item.getUnit(), item.getPriceperunit(),
-						item.getSumprice(), INVOICEID);
-			}
-			int areaCodeParsed = 0;
+
+			this.areaCodeParsed = 0;
 			try {
-				areaCodeParsed = Integer.parseInt(this.zipcodeinvoicefield.getText());
+				this.areaCodeParsed = Integer.parseInt(this.zipcodeinvoicefield.getText());
 			} catch (NumberFormatException e) {
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle(AppDataSettings.languageBundle.getString("errorWindowHeader").toUpperCase());
 				alert.setContentText(AppDataSettings.languageBundle.getString("errorNewInvoiceNoAreaCode"));
 				alert.show();
-
 				return;
 			}
-			double netsumParsed = 0.;
-			double taxvalueParsed = 0.;
-			double sumParsed = 0.;
 
-			try {
-				netsumParsed = Double.valueOf((this.invoicenetsumfield.getText()).replace(',', '.'));
-			} catch (NumberFormatException e) {
+			// Invoice creation process
+			createInvoiceItems();
+			createInvoiceDatabase();
+			createInvoicePdf();
+			createInvoiceSendEmail();
 
-			}
+		}
+	}
 
-			try {
-				taxvalueParsed = Double.valueOf(this.invoicetaxvaluefield.getText().replace(',', '.'));
-			} catch (NumberFormatException e) {
+	/**
+	 * Part of the invoice creation process. Add invoice items into the database,
+	 */
+	public void createInvoiceItems() {
 
-			}
+		for (InvoicePos item : invoiceItemsData) {
+			loadData.addNewInvoicePosItem(item.getId(), item.getItemname(), item.getUnit(), item.getPriceperunit(),
+					item.getSumprice(), INVOICEID);
+			// loadData.changeProductsAvailableamountByProductname(item.getItemname(),
+			// -(item.getUnit()));
+		}
 
-			try {
-				sumParsed = Double.valueOf(this.suminvoicefield.getText().replace(',', '.'));
-			} catch (NumberFormatException e) {
+	}
 
-			}
+	/**
+	 * Part of the invoice creation process. Must run after "createInvoiceItems".
+	 * Add invoice in to the database and close "add invoice" window.
+	 */
+	public void createInvoiceDatabase() {
+		// Generated values through "InvoicePos"
+		System.out.println("DEBUG createInviceDatabase start");
 
-			loadData.addNewInvoice(INVOICEID, CUSTOMERID, false, this.taxnumberinvoicefield.getText(),
-					this.streetinvoicefield.getText(), areaCodeParsed, this.cityinvoicefield.getText(),
-					this.countyinvoicefield.getText(),
-					this.countryinvoicecombobox.getSelectionModel().getSelectedItem().toString(),
-					(double) (netsumParsed), taxpct, (double) (taxvalueParsed), (double) (sumParsed),
-					this.currencyinvoicecombobox.getSelectionModel().getSelectedItem().toString(),
-					this.noteinvoicefield.getText());
-			MainWindowController.unpaidInvoicesData.clear();
-			MainWindowController.unpaidInvoicesData.addAll(loadData.getUnpaidInvoices());
-			addNewInvoiceWindow.close();
-			Alert alert = new Alert(Alert.AlertType.INFORMATION);
-			alert.setTitle(AppDataSettings.languageBundle.getString("okWindowHeader").toUpperCase());
-			alert.setContentText(AppDataSettings.languageBundle.getString("okWindowInvoiceAdded"));
-			alert.show();
+		try {
+			netsumParsed = Double.valueOf((this.invoicenetsumfield.getText()).replace(',', '.'));
+		} catch (NumberFormatException e) {
 
-			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-			String createdInvoicePDFPath = createInvoicePdf(INVOICEID,
-					sdf.format(AppDataSettings.todayDateFactory.get()), CUSTOMERID, false,
-					this.taxnumberinvoicefield.getText(), this.customerCompanyname, this.customerForeSurname,
-					this.streetinvoicefield.getText(), areaCodeParsed, this.cityinvoicefield.getText(),
-					this.countyinvoicefield.getText(),
-					this.countryinvoicecombobox.getSelectionModel().getSelectedItem().toString(),
-					(double) (netsumParsed), taxpct, (double) (taxvalueParsed), (double) (sumParsed),
-					this.currencyinvoicecombobox.getSelectionModel().getSelectedItem().toString(),
-					this.noteinvoicefield.getText());
-			Locale locale = Locale.getDefault();
-			System.out.println("Invoice created at: " + createdInvoicePDFPath);
-			Runnable sendEmailJob = new SendInvoiceEmail(INVOICEID, this.customerFirstname, this.customerLastname,
-					this.selectedInvoiceCustomer.getEmail(), (double) (sumParsed), this.currencyinvoicecombobox.getSelectionModel().getSelectedItem().toString(), locale.getCountry(),
-					createdInvoicePDFPath);
-			AppDataSettings.executeEmailJob.submit(sendEmailJob);
-			invoiceItemsData.clear();
+		}
+
+		try {
+			taxvalueParsed = Double.valueOf(this.invoicetaxvaluefield.getText().replace(',', '.'));
+		} catch (NumberFormatException e) {
+
+		}
+
+		try {
+			sumParsed = Double.valueOf(this.suminvoicefield.getText().replace(',', '.'));
+		} catch (NumberFormatException e) {
+
+		}
+
+		loadData.addNewInvoice(INVOICEID, CUSTOMERID, false, this.taxnumberinvoicefield.getText(),
+				this.streetinvoicefield.getText(), areaCodeParsed, this.cityinvoicefield.getText(),
+				this.countyinvoicefield.getText(),
+				this.countryinvoicecombobox.getSelectionModel().getSelectedItem().toString(), (double) (netsumParsed),
+				taxpct, (double) (taxvalueParsed), (double) (sumParsed),
+				this.currencyinvoicecombobox.getSelectionModel().getSelectedItem().toString(),
+				this.noteinvoicefield.getText());
+		MainWindowController.unpaidInvoicesData.clear();
+		MainWindowController.unpaidInvoicesData.addAll(loadData.getUnpaidInvoices());
+	}
+
+	/**
+	 * Part of the invoice creation process. Must run after "createInvoiceDatabase".
+	 * Create and save invoice PDF.
+	 */
+	public void createInvoicePdf() {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+		this.createdInvoicePDFPath = createInvoicePdf(INVOICEID, sdf.format(AppDataSettings.todayDateFactory.get()),
+				CUSTOMERID, false, this.taxnumberinvoicefield.getText(), this.customerCompanyname,
+				this.customerForeSurname, this.streetinvoicefield.getText(), areaCodeParsed,
+				this.cityinvoicefield.getText(), this.countyinvoicefield.getText(),
+				this.countryinvoicecombobox.getSelectionModel().getSelectedItem().toString(), (double) (netsumParsed),
+				taxpct, (double) (taxvalueParsed), (double) (sumParsed),
+				this.currencyinvoicecombobox.getSelectionModel().getSelectedItem().toString(),
+				this.noteinvoicefield.getText());
+		System.out.println("Invoice created at: " + createdInvoicePDFPath);
+		addNewInvoiceWindow.close();
+		// Clear invoiceItemsData always after creation of the pdf:
+		invoiceItemsData.clear();
+	}
+
+	/**
+	 * Part of the invoice creation process. Must run after "createInvoicePdf".
+	 * Start runnable that sends the invoice PDF as an email.
+	 */
+	public void createInvoiceSendEmail() {
+		Locale locale = Locale.getDefault();
+		invoiceCreationProcessEnded = true;
+		Runnable sendEmailJob = new SendInvoiceEmail(INVOICEID, this.customerFirstname, this.customerLastname,
+				this.selectedInvoiceCustomer.getEmail(), (double) (sumParsed),
+				this.currencyinvoicecombobox.getSelectionModel().getSelectedItem().toString(), locale.getCountry(),
+				createdInvoicePDFPath,
+				AppDataSettings.languageBundle.getString("invoiceEmailSendTxt").replace("--%--", "" + INVOICEID));
+		AppDataSettings.executeEmailJob.submit(sendEmailJob);
+
+	}
+
+	/**
+	 * Task that starts the method createInvoice and with that the invoice creation
+	 * process. Starts the invoice creation process and closes the create invoice
+	 * window. Creates the invoice and saves it to the database, pdf and sends
+	 * invoice PDF mail.
+	 * 
+	 * @return
+	 */
+	public Task invoiceCreationTask() {
+		try {
+			return new Task() {
+
+				@Override
+				protected Object call() throws Exception {
+					updateMessage("...");
+					progressLoading: while (true) {
+						for (int i = 1; i < 100; i++) {
+							updateProgress(i += 1, 100);
+							Thread.sleep(100);
+							if (NewInvoiceController.invoiceCreationProcessEnded) {
+								break progressLoading;
+							}
+						}
+					}
+
+					return true;
+				}
+
+			};
+		} catch (Exception e) {
+			return null;
 		}
 	}
 
@@ -544,15 +597,15 @@ public class NewInvoiceController implements Initializable {
 		} catch (BadElementException e1) {
 			ErrorReport.reportException(e1);
 			System.out.println("" + e1);
-			companyLogo=null;
+			companyLogo = null;
 		} catch (MalformedURLException e1) {
 			ErrorReport.reportException(e1);
 			System.out.println("" + e1);
-			companyLogo=null;
+			companyLogo = null;
 		} catch (IOException e1) {
 			ErrorReport.reportException(e1);
 			System.out.println("" + e1);
-			companyLogo=null;
+			companyLogo = null;
 		}
 		if (companyLogo != null) {
 			invoiceHeader.addCell(companyLogo);
@@ -673,7 +726,7 @@ public class NewInvoiceController implements Initializable {
 					invoiceTable.addCell(header);
 				});
 		// Table content ***
-		for (InvoicePos item : this.invoiceItemsData) {
+		for (InvoicePos item : invoiceItemsData) {
 			invoiceTable.addCell(item.getId() + "");
 			invoiceTable.addCell(item.getItemname());
 			invoiceTable.addCell(item.getUnit() + "");

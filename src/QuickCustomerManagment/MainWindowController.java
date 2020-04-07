@@ -13,6 +13,8 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.awt.Desktop;
+
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -20,6 +22,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -34,12 +37,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.util.Callback;
 import model.UnpaidInvoice;;
 
 public class MainWindowController implements Initializable {
 
+	@FXML
+	private Text mainStatusDisplay = new Text();
 	@FXML
 	private Text applicationHeaderTitle = new Text();
 	@FXML
@@ -49,9 +55,13 @@ public class MainWindowController implements Initializable {
 	@FXML
 	private Button addnewcustomerButton = new Button();
 	@FXML
+	private Button addnewproductButton = new Button();
+	@FXML
 	private Button showInvoicesFolderButton = new Button();
 	@FXML
 	private Button showAllCustomersButton = new Button();
+	@FXML
+	private Button showAllProductsButton = new Button();
 	@FXML
 	private Button settingsButton = new Button();
 	@FXML
@@ -72,6 +82,7 @@ public class MainWindowController implements Initializable {
 	public static ObservableList<UnpaidInvoice> unpaidInvoicesData = FXCollections.observableArrayList();
 
 	private AppDataSettings settings = new AppDataSettings();
+	public static SimpleStringProperty statusInfo;
 
 	private TableColumn unpaidInvoiceDate;
 	private TableColumn unpaidInvoiceSum;
@@ -109,11 +120,14 @@ public class MainWindowController implements Initializable {
 		settings.loadDatabase();
 		// settings.loadAppSettings();
 		loadUnpaidInvoices();
+		statusInfo = new SimpleStringProperty(AppDataSettings.languageBundle.getString("mainWindowsaddunpaidinvoiceInfoText").replace("--%--", ""+this.unpaidInvoicesData.size()));
+		this.mainStatusDisplay.textProperty().bind(statusInfo);
 		loadUiMainWindowsText();
 	}
 
 	private void loadUiMainWindowsText() {
-		this.applicationHeaderTitle.setText(AppDataSettings.languageBundle.getString("mainWindowsApplicationTitleText"));
+		this.applicationHeaderTitle
+				.setText(AppDataSettings.languageBundle.getString("mainWindowsApplicationTitleText"));
 		this.unpaidInvoicesLabel.setText(AppDataSettings.languageBundle.getString("mainWindowsUnpaidinvoicesText"));
 		this.addnewinvoiceButton
 				.setText(AppDataSettings.languageBundle.getString("mainWindowsaddnewinvoicebuttonText"));
@@ -122,17 +136,26 @@ public class MainWindowController implements Initializable {
 		this.showInvoicesFolderButton
 				.setText(AppDataSettings.languageBundle.getString("mainWindowsshowinvoicesfolderbuttonText"));
 		this.settingsButton.setText(AppDataSettings.languageBundle.getString("mainWindowssettingsbuttonText"));
-		this.emailConfigurationButton.setText(AppDataSettings.languageBundle.getString("mainWindowsemailconfigurationbuttonText"));
+		this.emailConfigurationButton
+				.setText(AppDataSettings.languageBundle.getString("mainWindowsemailconfigurationbuttonText"));
 		this.unpaidInvoiceDate.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceDateHeader"));
 		this.unpaidInvoiceSum.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceSumHeader"));
-		this.unpaidInvoiceCurrencyIso.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceCurrencyisoHeader"));
-		this.unpaidInvoiceCustomercompanyname.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceCompanynameHeader"));
-		this.unpaidInvoiceCustomerforename.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceCustomerforenameHeader"));
-		this.unpaidInvoiceCustomersurname.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceCustomersurnameHeader"));
-		this.unpaidInvoiceCustomerpaybutton.setText(AppDataSettings.languageBundle.getString("unpaidinvoicePaidButtonHeader"));
-		this.unpaidInvoiceCustomershowinvoicebutton.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceShowinvoiceButtonHeader"));
+		this.unpaidInvoiceCurrencyIso
+				.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceCurrencyisoHeader"));
+		this.unpaidInvoiceCustomercompanyname
+				.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceCompanynameHeader"));
+		this.unpaidInvoiceCustomerforename
+				.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceCustomerforenameHeader"));
+		this.unpaidInvoiceCustomersurname
+				.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceCustomersurnameHeader"));
+		this.unpaidInvoiceCustomerpaybutton
+				.setText(AppDataSettings.languageBundle.getString("unpaidinvoicePaidButtonHeader"));
+		this.unpaidInvoiceCustomershowinvoicebutton
+				.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceShowinvoiceButtonHeader"));
 		this.showAllCustomersButton.setText(AppDataSettings.languageBundle.getString("showAllCustomerButtonHeader"));
-
+		this.addnewproductButton.setText(AppDataSettings.languageBundle.getString("mainWindowsaddproductbuttonText"));
+		this.showAllProductsButton
+				.setText(AppDataSettings.languageBundle.getString("mainWindowshowproductsbuttonText"));
 	}
 
 	@FXML
@@ -174,7 +197,7 @@ public class MainWindowController implements Initializable {
 			NewInvoiceController.addNewInvoiceWindow = addInvoiceWindow;
 
 		} catch (Exception ex) {
-			System.out.println(""+ErrorReport.reportException(ex));
+			System.out.println("" + ErrorReport.reportException(ex));
 			System.out.println("Error report: " + ex.getMessage());
 			Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
 		}
@@ -272,7 +295,8 @@ public class MainWindowController implements Initializable {
 			Stage emailconfigurationWindow = new Stage();
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add("/styles/Styles.css");
-			emailconfigurationWindow.setTitle(AppDataSettings.languageBundle.getString("emailConfigurationWindowHeaderText"));
+			emailconfigurationWindow
+					.setTitle(AppDataSettings.languageBundle.getString("emailConfigurationWindowHeaderText"));
 			emailconfigurationWindow.setScene(scene);
 			emailconfigurationWindow.show();
 			EmailConfigurationController.EMAILCONFIGURATIONWINDOW = emailconfigurationWindow;
@@ -281,7 +305,7 @@ public class MainWindowController implements Initializable {
 			Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	
+
 	@FXML
 	public void handleShowInvoicesFolder() throws IOException {
 		try {
@@ -305,7 +329,7 @@ public class MainWindowController implements Initializable {
 			}
 		}
 	}
-	
+
 	@FXML
 	public void handleOpenCustomersView() {
 		Parent root;
@@ -316,6 +340,14 @@ public class MainWindowController implements Initializable {
 			scene.getStylesheets().add("/styles/Styles.css");
 			customersviewWindow.setTitle(AppDataSettings.languageBundle.getString("allcustomersWindowHeaderTxt"));
 			customersviewWindow.setScene(scene);
+			customersviewWindow.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				@Override
+				public void handle(WindowEvent arg0) {
+					// TODO Auto-generated method stub
+					ViewCustomersController.customersTableData.clear();
+				}
+			});
+
 			customersviewWindow.show();
 
 		} catch (IOException ex) {
@@ -324,6 +356,11 @@ public class MainWindowController implements Initializable {
 		}
 	}
 
+	/**
+	 * Opens the pdf file of an invoice
+	 * 
+	 * @param invoiceid
+	 */
 	public static void showInvoice(Integer invoiceid) {
 		if (invoiceid > 0) {
 			String invoiceFileLocation = AppDataSettings.INVOICESFILELOCATION + "/invoice_no" + invoiceid + ".pdf";
@@ -355,4 +392,48 @@ public class MainWindowController implements Initializable {
 			alert.show();
 		}
 	}
+
+	@FXML
+	public void handleNewProductAction() {
+		Parent root;
+		try {
+			root = FXMLLoader.load(getClass().getResource("/QuickCustomerManagment/AddProducts.fxml"));
+			Stage addproductsWindow = new Stage();
+			Scene scene = new Scene(root);
+			scene.getStylesheets().add("/styles/Styles.css");
+			addproductsWindow.setTitle(AppDataSettings.languageBundle.getString("addProductsWindowHeaderTxt"));
+			addproductsWindow.setScene(scene);
+			addproductsWindow.show();
+			AddProductsController.addProductsWindow = addproductsWindow;
+
+		} catch (IOException ex) {
+			Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
+	@FXML
+	private void handleOpenProductsView(ActionEvent event) {
+		Parent root;
+		try {
+			root = FXMLLoader.load(getClass().getResource("/QuickCustomerManagment/ViewProducts.fxml"));
+			Stage viewproductsWindow = new Stage();
+			Scene scene = new Scene(root);
+			scene.getStylesheets().add("/styles/Styles.css");
+			viewproductsWindow.setTitle(AppDataSettings.languageBundle.getString("allproductsWindowHeaderTxt"));
+			viewproductsWindow.setScene(scene);
+			viewproductsWindow.show();
+			viewproductsWindow.setOnCloseRequest(new EventHandler<WindowEvent>() {
+				@Override
+				public void handle(WindowEvent arg0) {
+					ViewProductsController.productsTableData.clear();
+				}
+			});
+
+		} catch (Exception ex) {
+			System.out.println("" + ErrorReport.reportException(ex));
+			System.out.println("Error report: " + ex.getMessage());
+			Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+		}
+	}
+
 }

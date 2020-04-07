@@ -13,11 +13,11 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane id="AnchorPane" prefHeight="589.0" prefWidth="878.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="QuickCustomerManagment.MainWindowController">
+<AnchorPane id="AnchorPane" prefHeight="612.0" prefWidth="878.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="QuickCustomerManagment.MainWindowController">
     <children>
-      <VBox prefHeight="589.0" prefWidth="878.0">
+      <VBox prefHeight="612.0" prefWidth="901.0">
          <children>
-            <BorderPane prefHeight="200.0" prefWidth="200.0">
+            <BorderPane prefHeight="254.0" prefWidth="901.0">
                <right>
                   <ComboBox fx:id="languageSelector" onAction="#handleLanguageChanged" prefWidth="150.0" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
@@ -36,11 +36,25 @@
                   </Text>
                </center>
                <padding>
-                  <Insets right="30.0" />
+                  <Insets left="30.0" right="30.0" />
                </padding>
                <VBox.margin>
-                  <Insets />
+                  <Insets bottom="15.0" />
                </VBox.margin>
+               <bottom>
+                  <VBox prefHeight="37.0" style="-fx-background-color: #fff8c4;" BorderPane.alignment="CENTER">
+                     <children>
+                        <Text fx:id="mainStatusDisplay" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-background-color: #ffd382;" text="Text" textAlignment="CENTER" wrappingWidth="845.13671875">
+                           <VBox.margin>
+                              <Insets bottom="5.0" top="5.0" />
+                           </VBox.margin>
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Text>
+                     </children>
+                  </VBox>
+               </bottom>
             </BorderPane>
             <VBox maxWidth="1.7976931348623157E308" prefHeight="327.0" prefWidth="878.0" style="-fx-border-color: red;">
                <children>
@@ -82,8 +96,13 @@
                   </Button>
                   <Button fx:id="addnewcustomerButton" mnemonicParsing="false" onAction="#handleNewClientAction" prefHeight="37.0" prefWidth="160.0" text="Add new customer">
                      <HBox.margin>
-                        <Insets top="10.0" />
+                        <Insets right="25.0" top="10.0" />
                      </HBox.margin></Button>
+                  <Button fx:id="addnewproductButton" mnemonicParsing="false" onAction="#handleNewProductAction" prefHeight="37.0" prefWidth="160.0" text="Add product">
+                     <HBox.margin>
+                        <Insets top="10.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
                <VBox.margin>
                   <Insets left="10.0" right="10.0" top="20.0" />
@@ -108,6 +127,11 @@
                      </HBox.margin>
                   </Button>
                   <Button fx:id="showAllCustomersButton" mnemonicParsing="false" onAction="#handleOpenCustomersView" prefHeight="37.0" prefWidth="160.0" text="All customers" />
+                  <Button fx:id="showAllProductsButton" mnemonicParsing="false" onAction="#handleOpenProductsView" prefHeight="37.0" prefWidth="160.0" text="All products">
+                     <HBox.margin>
+                        <Insets left="25.0" />
+                     </HBox.margin>
+                  </Button>
                </children>
                <padding>
                   <Insets bottom="10.0" top="10.0" />
@@ -118,7 +142,7 @@
             </HBox>
             <HBox prefHeight="189.0" prefWidth="878.0" style="-fx-background-color: #ffd382;">
                <children>
-                  <BorderPane maxWidth="1.7976931348623157E308" prefHeight="85.0" prefWidth="879.0">
+                  <BorderPane maxWidth="1.7976931348623157E308" prefHeight="108.0" prefWidth="879.0">
                      <left>
                         <Text fx:id="copyrighttext" strokeType="OUTSIDE" strokeWidth="0.0" text="Developed by a.dridi (github.com/a-dridi)" wrappingWidth="191.13671875" BorderPane.alignment="CENTER">
                            <BorderPane.margin>

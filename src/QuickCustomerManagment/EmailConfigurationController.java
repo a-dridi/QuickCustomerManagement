@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -40,7 +41,7 @@ public class EmailConfigurationController implements Initializable {
 	@FXML
 	private TextField usernameEmailConfigurationValue = new TextField();
 	@FXML
-	private TextField passwordEmailConfigurationValue = new TextField();
+	private PasswordField passwordEmailConfigurationValue = new PasswordField();
 	@FXML
 	private Button saveEmailConfigurationButton = new Button();
 
@@ -70,11 +71,11 @@ public class EmailConfigurationController implements Initializable {
 	@FXML
 	public void handleSaveSettings() {
 		settings.updateSetting("emailForenameSurname", this.forenamesurnameEmailConfigurationValue.getText());
-		settings.updateSetting("emailEmailaddress", this.emailEmailConfigurationValue.getText());
-		settings.updateSetting("emailHost", this.serverEmailConfigurationValue.getText());
-		settings.updateSetting("emailPort", this.portEmailConfigurationValue.getText());
-		settings.updateSetting("emailUsername", this.usernameEmailConfigurationValue.getText());
-		settings.updateSetting("emailPassword", this.passwordEmailConfigurationValue.getText());
+		settings.updateSetting("emailEmailaddress", this.emailEmailConfigurationValue.getText().trim());
+		settings.updateSetting("emailHost", this.serverEmailConfigurationValue.getText().trim());
+		settings.updateSetting("emailPort", this.portEmailConfigurationValue.getText().trim());
+		settings.updateSetting("emailUsername", this.usernameEmailConfigurationValue.getText().trim());
+		settings.updateSetting("emailPassword", this.passwordEmailConfigurationValue.getText().trim());
 
 		EMAILCONFIGURATIONWINDOW.close();
 	}

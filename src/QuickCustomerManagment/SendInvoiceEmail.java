@@ -14,14 +14,13 @@ import javax.activation.FileDataSource;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Multipart;
+import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
-
-import javafx.scene.control.Alert;
 
 /**
  * Send Invoice Email in background through threads
@@ -38,9 +37,10 @@ public class SendInvoiceEmail implements Runnable {
 	private String currencyiso;
 	private String languageCode;
 	private String relativeInvoiceFilePath;
+	private String invoiceSendSuccessMessage;
 
 	public SendInvoiceEmail(int invoiceId, String customerForename, String customerSurname, String customerEmail,
-			double invoiceamount, String currencyiso, String languageCode, String relativeInvoiceFilePath) {
+			double invoiceamount, String currencyiso, String languageCode, String relativeInvoiceFilePath, String invoiceSendSuccessMessage) {
 		super();
 		this.invoiceId = invoiceId;
 		this.customerForename = customerForename;
@@ -50,25 +50,24 @@ public class SendInvoiceEmail implements Runnable {
 		this.currencyiso = currencyiso;
 		this.languageCode = languageCode;
 		this.relativeInvoiceFilePath = relativeInvoiceFilePath;
+		this.invoiceSendSuccessMessage = invoiceSendSuccessMessage;
 	}
 
 	@Override
-	public void run() {
+	public void run() throws RuntimeException {
 		this.loadData.loadAppSettings();
 
 		System.out.println("Send invoice to: " + customerEmail);
-		String emailStatus = sendInvoiceEmail(invoiceId, customerForename, customerSurname, customerEmail,
-				invoiceamount, currencyiso, languageCode, relativeInvoiceFilePath);
 
-		if (emailStatus.isEmpty()) {
+		try {
+			sendInvoiceEmail(invoiceId, customerForename, customerSurname, customerEmail, invoiceamount, currencyiso,
+					languageCode, relativeInvoiceFilePath);
 			System.out.println("Invoice email was sent. ");
-		} else {
-			System.out.println("Invoice could NOT be sent. ");
-			Alert alert = new Alert(Alert.AlertType.ERROR);
-			alert.setTitle(AppDataSettings.languageBundle.getString("emailsendingerrorWindowHeader").toUpperCase());
-			alert.setContentText(emailStatus);
-			alert.show();
+			MainWindowController.statusInfo.set(this.invoiceSendSuccessMessage);
 
+		} catch (SendFailedException e) {
+			System.out.println("Invoice could NOT be sent. ");
+			MainWindowController.statusInfo.set(e.getMessage());
 		}
 
 	}
@@ -79,9 +78,11 @@ public class SendInvoiceEmail implements Runnable {
 	 * 
 	 * @return empty string, if email could be sent successfully. Otherwise the
 	 *         error message.
+	 * @throws SendFailedException
 	 */
 	public String sendInvoiceEmail(int invoiceId, String customerForename, String customerSurname, String customerEmail,
-			double invoiceamount, String currencyiso, String languageCode, String relativeInvoiceFilePath) {
+			double invoiceamount, String currencyiso, String languageCode, String relativeInvoiceFilePath)
+			throws SendFailedException {
 		Optional<String> attachmentFilePath = Optional.ofNullable(relativeInvoiceFilePath);
 		if (attachmentFilePath.isEmpty() || attachmentFilePath.get().length() < 5) {
 			return "Invoice pdf could not be created. Please check your invoices folder.";
@@ -131,7 +132,7 @@ public class SendInvoiceEmail implements Runnable {
 		Session session = null;
 		try {
 			lock.lockInterruptibly();
-		    session = Session.getDefaultInstance(properties, authentication);
+			session = Session.getDefaultInstance(properties, authentication);
 		} catch (Exception e) {
 			Logger.getLogger(NewInvoiceController.class.getName()).log(Level.SEVERE, null, e);
 		} finally {
@@ -186,8 +187,8 @@ public class SendInvoiceEmail implements Runnable {
 			return "";
 		} catch (Exception e) {
 			Logger.getLogger(NewInvoiceController.class.getName()).log(Level.SEVERE, null, e);
-			return AppDataSettings.languageBundle.getString("invoicemailerrorEmailNotSentText") + ": " + e.getCause()
-					+ " - " + e.getMessage();
+			throw new SendFailedException(AppDataSettings.languageBundle.getString("invoicemailerrorEmailNotSentText")
+					+ ": " + e.getCause() + " - " + e.getMessage());
 		}
 	}
 
