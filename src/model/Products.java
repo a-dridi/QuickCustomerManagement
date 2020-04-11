@@ -20,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.InputMethodEvent;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -123,6 +124,8 @@ public class Products implements Serializable {
 						editproductsWindow
 								.setTitle(AppDataSettings.languageBundle.getString("editproductsWindowHeaderText"));
 						editproductsWindow.setScene(scene);
+						editproductsWindow.getIcons().add(new Image("/QuickCustomerManagment/img/eye.png"));
+						editproductsWindow.setResizable(false);
 						editproductsWindow.show();
 
 					} catch (IOException ex) {

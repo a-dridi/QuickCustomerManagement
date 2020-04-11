@@ -12,6 +12,8 @@ Your data is saved fast and efficient in an SQLlite Database.
 Invoices are saved in PDF in your invoices folder and they are sent to the customer email address through your SMTP mail provider.
 - Overview of unpaid invoices
 If you start the application, then you can see directly the unpaid invoices with the customer and invoice sum. 
+- Create and manage products
+You can create product templates and manage the available amount of products and the product price.
 
 ![Screenshot of Desktop Application Quick Customer Managment](https://raw.githubusercontent.com/a-dridi/QuickCustomerManagment/master/screenshot.PNG)
 
@@ -38,14 +40,26 @@ If you use this procect folder, then you can import the downloaded jars (from th
 Httpclient-xxx, httpcore-xxx, commons-logging and commons-codec can be downloaed on this site: 
 http://hc.apache.org/downloads.cgi
 
+##Important configuration
+Please activate the recommended report error functionality. You can do that by copying the file "credentials.txt_template" to the file "credentials.txt" with the values of your error report server.
+
 ## Test
 A JUnit Test (JUnit5) is available in the file: src/test/AppDataSettingsTest.java
 
 ## Run
-Main application is in the file and package QuickCustomerManagment/Main.Java
+There is a runnable jar file in this root github repository. 
+If you want to compile this project, then check the Main application is in the file and package QuickCustomerManagment/Main.Java
 
-## Installation (Deployment)
-Please download this repository and open it in an IDE to build and run this application. Preferably "Eclipse", because this application folder was created in that IDE.
+##Installation
+Besides the executable (exe file), there is also an installer for Windows. It can be downloaded from the release page:
+https://github.com/a-dridi/QuickCustomerManagment/releases
+
+## Custom Installation (Deployment)
+- Option 1: 
+You can create an exe file of the runnable jar file in this root github repository by using the program "launch4j". Please use for that the file "quickcustomermanagment.xml".
+
+- Option 2:
+Deployment from source. Please download this repository and open it in an IDE to build and run this application. Preferably "Eclipse", because this application folder was created in that IDE.
 
 ## Authors
 

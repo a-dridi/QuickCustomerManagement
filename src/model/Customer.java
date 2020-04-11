@@ -17,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Customer {
@@ -87,6 +88,8 @@ public class Customer {
 						editcustomerWindow
 								.setTitle(AppDataSettings.languageBundle.getString("editcustomerWindowHeaderText"));
 						editcustomerWindow.setScene(scene);
+						editcustomerWindow.getIcons().add(new Image("/QuickCustomerManagment/img/eye.png"));
+						editcustomerWindow.setResizable(false);
 						editcustomerWindow.show();
 
 					} catch (IOException ex) {

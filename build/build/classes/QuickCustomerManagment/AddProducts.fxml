@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane id="AnchorPane" prefHeight="337.0" prefWidth="804.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="QuickCustomerManagment.AddProductsController">
+   <children>
+      <Text fx:id="addProductsHeader" fill="#751c1ced" layoutX="273.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Add new product" textAlignment="CENTER" wrappingWidth="273.13671875">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Text>
+      <VBox layoutX="14.0" layoutY="69.0" prefHeight="281.0" prefWidth="785.0">
+         <children>
+            <HBox prefHeight="46.0" prefWidth="795.0">
+               <children>
+                  <Text fx:id="productnameAddProductsDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Product Name:" wrappingWidth="190.13671875">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="productnameAddProductsField" prefHeight="25.0" prefWidth="581.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="46.0" prefWidth="795.0">
+               <children>
+                  <Text fx:id="pricerperunitAddProductsDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Price Per Unit:" wrappingWidth="190.13671875">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="pricerperunitAddProductsField" prefHeight="25.0" prefWidth="581.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="46.0" prefWidth="795.0">
+               <children>
+                  <Text fx:id="availableamountAddProductsDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Available Amount:" wrappingWidth="190.13671875">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="availableamountAddProductsField" prefHeight="25.0" prefWidth="581.0" />
+               </children>
+            </HBox>
+            <HBox prefHeight="46.0" prefWidth="788.0">
+               <children>
+                  <Text fx:id="noteAddProductsDesc" fill="#751c1ced" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Note:" wrappingWidth="190.13671875">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="noteAddProductsField" prefHeight="25.0" prefWidth="581.0" />
+               </children>
+            </HBox>
+            <BorderPane prefHeight="63.0" prefWidth="795.0">
+               <center>
+                  <Button fx:id="AddAddProductsButton" mnemonicParsing="false" onAction="#handleSaveAddProducts" prefHeight="39.0" prefWidth="164.0" style="-fx-background-color: green;" text="Add" textFill="WHITE" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets top="5.0" />
+                     </BorderPane.margin>
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Button>
+               </center>
+               <bottom>
+                  <Text fx:id="windowInfoAddProductsText" fill="#000000ed" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 20px;" text="Add &quot;-1&quot;, if this product has an unlimited amount." wrappingWidth="776.13671875" BorderPane.alignment="TOP_LEFT">
+                     <font>
+                        <Font size="10.0" />
+                     </font>
+                     <BorderPane.margin>
+                        <Insets top="15.0" />
+                     </BorderPane.margin>
+                  </Text>
+               </bottom>
+            </BorderPane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

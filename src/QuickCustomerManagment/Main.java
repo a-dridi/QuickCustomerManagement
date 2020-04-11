@@ -6,6 +6,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.text.Text;
 import javafx.fxml.FXMLLoader;
@@ -47,8 +48,8 @@ public class Main extends Application {
 
 			Scene scene = new Scene(root);
 			scene.getStylesheets().add("/styles/Styles.css");
-
 			stage.setTitle("Quick Customer Managment");
+			stage.getIcons().add(new Image("/QuickCustomerManagment/img/quickcustomermanagment_logo.png"));
 			stage.setScene(scene);
 			stage.show();
 			this.mainwindowStage = stage;

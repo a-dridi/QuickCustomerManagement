@@ -85,6 +85,7 @@ public class MainWindowController implements Initializable {
 	public static SimpleStringProperty statusInfo;
 
 	private TableColumn unpaidInvoiceDate;
+	private TableColumn unpaidInvoiceId;
 	private TableColumn unpaidInvoiceSum;
 	private TableColumn unpaidInvoiceCurrencyIso;
 	private TableColumn unpaidInvoiceCustomercompanyname;
@@ -103,7 +104,12 @@ public class MainWindowController implements Initializable {
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+		try {
+			this.addIcon.setImage(new Image("/QuickCustomerManagment/img/plus-square.png"));
+			this.eyeIcon.setImage(new Image("/QuickCustomerManagment/img/eye.png"));
+		} catch (Exception e) {
 
+		}
 		// Load language
 		for (String lang : langList.values()) {
 			this.languageSelector.getItems().add(lang);
@@ -120,7 +126,9 @@ public class MainWindowController implements Initializable {
 		settings.loadDatabase();
 		// settings.loadAppSettings();
 		loadUnpaidInvoices();
-		statusInfo = new SimpleStringProperty(AppDataSettings.languageBundle.getString("mainWindowsaddunpaidinvoiceInfoText").replace("--%--", ""+this.unpaidInvoicesData.size()));
+		statusInfo = new SimpleStringProperty(
+				AppDataSettings.languageBundle.getString("mainWindowsaddunpaidinvoiceInfoText").replace("--%--",
+						"" + this.unpaidInvoicesData.size()));
 		this.mainStatusDisplay.textProperty().bind(statusInfo);
 		loadUiMainWindowsText();
 	}
@@ -139,6 +147,7 @@ public class MainWindowController implements Initializable {
 		this.emailConfigurationButton
 				.setText(AppDataSettings.languageBundle.getString("mainWindowsemailconfigurationbuttonText"));
 		this.unpaidInvoiceDate.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceDateHeader"));
+		this.unpaidInvoiceId.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceNumberHeader"));		
 		this.unpaidInvoiceSum.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceSumHeader"));
 		this.unpaidInvoiceCurrencyIso
 				.setText(AppDataSettings.languageBundle.getString("unpaidinvoiceCurrencyisoHeader"));
@@ -168,6 +177,8 @@ public class MainWindowController implements Initializable {
 			scene.getStylesheets().add("/styles/Styles.css");
 			addCustomerWindow.setTitle(AppDataSettings.languageBundle.getString("addnewcustomerWindowHeader"));
 			addCustomerWindow.setScene(scene);
+			addCustomerWindow.getIcons().add(new Image("/QuickCustomerManagment/img/plus-square.png"));
+			addCustomerWindow.setResizable(false);
 			addCustomerWindow.show();
 			NewCustomerController.newCustomerWindow = addCustomerWindow;
 		} catch (IOException ex) {
@@ -187,6 +198,8 @@ public class MainWindowController implements Initializable {
 			scene.getStylesheets().add("/styles/Styles.css");
 			addInvoiceWindow.setTitle(AppDataSettings.languageBundle.getString("addnewinvoiceWindowHeader"));
 			addInvoiceWindow.setScene(scene);
+			addInvoiceWindow.getIcons().add(new Image("/QuickCustomerManagment/img/plus-square.png"));
+			addInvoiceWindow.setResizable(false);
 			addInvoiceWindow.show();
 			addInvoiceWindow.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override
@@ -213,6 +226,8 @@ public class MainWindowController implements Initializable {
 		AppDataSettings settings = new AppDataSettings();
 		this.settings.loadUIText(this.getKeyOfValue(this.langList, this.languageSelector.getValue().toString()));
 		loadUiMainWindowsText();
+		statusInfo = new SimpleStringProperty(AppDataSettings.languageBundle
+				.getString("mainWindowsaddunpaidinvoiceInfoText").replace("--%--", "" + unpaidInvoicesData.size()));
 	}
 
 	/**
@@ -237,6 +252,7 @@ public class MainWindowController implements Initializable {
 	public void loadUnpaidInvoices() {
 		this.unpaidInvoicesList = this.settings.getUnpaidInvoices();
 		this.unpaidInvoiceDate = new TableColumn();
+		this.unpaidInvoiceId = new TableColumn();
 		this.unpaidInvoiceSum = new TableColumn();
 		this.unpaidInvoiceCurrencyIso = new TableColumn();
 		this.unpaidInvoiceCustomercompanyname = new TableColumn();
@@ -245,6 +261,7 @@ public class MainWindowController implements Initializable {
 		this.unpaidInvoiceCustomerpaybutton = new TableColumn<UnpaidInvoice, Object>();
 		this.unpaidInvoiceCustomershowinvoicebutton = new TableColumn<UnpaidInvoice, Object>();
 		this.unpaidInvoiceDate.setCellValueFactory(new PropertyValueFactory<>("date"));
+		this.unpaidInvoiceId.setCellValueFactory(new PropertyValueFactory<>("invoiceId"));
 		this.unpaidInvoiceSum.setCellValueFactory(new PropertyValueFactory<>("sum"));
 		this.unpaidInvoiceCurrencyIso.setCellValueFactory(new PropertyValueFactory<>("currencyIso"));
 		this.unpaidInvoiceCustomercompanyname.setCellValueFactory(new PropertyValueFactory<>("customercompanyname"));
@@ -252,15 +269,24 @@ public class MainWindowController implements Initializable {
 		this.unpaidInvoiceCustomersurname.setCellValueFactory(new PropertyValueFactory<>("customersurname"));
 		this.unpaidInvoiceCustomerpaybutton.setCellValueFactory(new PropertyValueFactory<>("paid"));
 		this.unpaidInvoiceCustomershowinvoicebutton.setCellValueFactory(new PropertyValueFactory<>("showinvoice"));
-		this.unpaidInvoicesData.addAll(this.unpaidInvoicesList);
+		unpaidInvoicesData.addAll(this.unpaidInvoicesList);
 		this.unpaidInvoices
 				.setPlaceholder(new Label(AppDataSettings.languageBundle.getString("unpaidinvicesDefaultPlaceholder")));
 		this.unpaidInvoices.setItems(this.unpaidInvoicesData);
 
-		this.unpaidInvoices.getColumns().addAll(this.unpaidInvoiceDate, this.unpaidInvoiceSum,
+		this.unpaidInvoices.getColumns().addAll(this.unpaidInvoiceDate, this.unpaidInvoiceId, this.unpaidInvoiceSum,
 				this.unpaidInvoiceCurrencyIso, this.unpaidInvoiceCustomercompanyname,
 				this.unpaidInvoiceCustomerforename, this.unpaidInvoiceCustomersurname,
 				this.unpaidInvoiceCustomerpaybutton, this.unpaidInvoiceCustomershowinvoicebutton);
+	}
+
+	public static void reloadUnpaidInvoices() {
+		AppDataSettings reloadData = new AppDataSettings();
+		unpaidInvoicesData.clear();
+		unpaidInvoicesData.addAll(reloadData.getUnpaidInvoices());
+		statusInfo.set(AppDataSettings.languageBundle.getString("mainWindowsaddunpaidinvoiceInfoText").replace("--%--",
+				"" + unpaidInvoicesData.size()));
+		System.out.println("DEBUG RELOADED");
 	}
 
 	/**
@@ -276,6 +302,8 @@ public class MainWindowController implements Initializable {
 			scene.getStylesheets().add("/styles/Styles.css");
 			settingsWindow.setTitle(AppDataSettings.languageBundle.getString("settingsWindowHeaderText"));
 			settingsWindow.setScene(scene);
+			settingsWindow.getIcons().add(new Image("/QuickCustomerManagment/img/quickcustomermanagment_logo.png"));
+			settingsWindow.setResizable(false);
 			settingsWindow.show();
 			SettingsController.SETTINGSWINDOW = settingsWindow;
 
@@ -298,6 +326,8 @@ public class MainWindowController implements Initializable {
 			emailconfigurationWindow
 					.setTitle(AppDataSettings.languageBundle.getString("emailConfigurationWindowHeaderText"));
 			emailconfigurationWindow.setScene(scene);
+			emailconfigurationWindow.getIcons().add(new Image("/QuickCustomerManagment/img/quickcustomermanagment_logo.png"));
+			emailconfigurationWindow.setResizable(false);
 			emailconfigurationWindow.show();
 			EmailConfigurationController.EMAILCONFIGURATIONWINDOW = emailconfigurationWindow;
 
@@ -340,10 +370,10 @@ public class MainWindowController implements Initializable {
 			scene.getStylesheets().add("/styles/Styles.css");
 			customersviewWindow.setTitle(AppDataSettings.languageBundle.getString("allcustomersWindowHeaderTxt"));
 			customersviewWindow.setScene(scene);
+			customersviewWindow.getIcons().add(new Image("/QuickCustomerManagment/img/eye.png"));
 			customersviewWindow.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override
 				public void handle(WindowEvent arg0) {
-					// TODO Auto-generated method stub
 					ViewCustomersController.customersTableData.clear();
 				}
 			});
@@ -403,6 +433,8 @@ public class MainWindowController implements Initializable {
 			scene.getStylesheets().add("/styles/Styles.css");
 			addproductsWindow.setTitle(AppDataSettings.languageBundle.getString("addProductsWindowHeaderTxt"));
 			addproductsWindow.setScene(scene);
+			addproductsWindow.getIcons().add(new Image("/QuickCustomerManagment/img/plus-square.png"));
+			addproductsWindow.setResizable(false);
 			addproductsWindow.show();
 			AddProductsController.addProductsWindow = addproductsWindow;
 
@@ -421,6 +453,7 @@ public class MainWindowController implements Initializable {
 			scene.getStylesheets().add("/styles/Styles.css");
 			viewproductsWindow.setTitle(AppDataSettings.languageBundle.getString("allproductsWindowHeaderTxt"));
 			viewproductsWindow.setScene(scene);
+			viewproductsWindow.getIcons().add(new Image("/QuickCustomerManagment/img/eye.png"));
 			viewproductsWindow.show();
 			viewproductsWindow.setOnCloseRequest(new EventHandler<WindowEvent>() {
 				@Override

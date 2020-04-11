@@ -5,6 +5,7 @@ countries.csv
 customermanagment.db
 customermanagment.db-journal
 credentials.txt
+/Output
 
 # compiled output
 /dist

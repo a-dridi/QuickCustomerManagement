@@ -1,6 +1,5 @@
 package QuickCustomerManagment;
 
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -355,8 +354,7 @@ public class NewInvoiceController implements Initializable {
 		for (InvoicePos item : invoiceItemsData) {
 			loadData.addNewInvoicePosItem(item.getId(), item.getItemname(), item.getUnit(), item.getPriceperunit(),
 					item.getSumprice(), INVOICEID);
-			// loadData.changeProductsAvailableamountByProductname(item.getItemname(),
-			// -(item.getUnit()));
+			loadData.changeProductsAvailableamountByProductname(item.getItemname(), -(item.getUnit()));
 		}
 
 	}
@@ -367,7 +365,6 @@ public class NewInvoiceController implements Initializable {
 	 */
 	public void createInvoiceDatabase() {
 		// Generated values through "InvoicePos"
-		System.out.println("DEBUG createInviceDatabase start");
 
 		try {
 			netsumParsed = Double.valueOf((this.invoicenetsumfield.getText()).replace(',', '.'));
@@ -394,8 +391,7 @@ public class NewInvoiceController implements Initializable {
 				taxpct, (double) (taxvalueParsed), (double) (sumParsed),
 				this.currencyinvoicecombobox.getSelectionModel().getSelectedItem().toString(),
 				this.noteinvoicefield.getText());
-		MainWindowController.unpaidInvoicesData.clear();
-		MainWindowController.unpaidInvoicesData.addAll(loadData.getUnpaidInvoices());
+		MainWindowController.reloadUnpaidInvoices();
 	}
 
 	/**
@@ -479,6 +475,8 @@ public class NewInvoiceController implements Initializable {
 			Stage invoicePosWindow = new Stage();
 			Scene scene = new Scene(root);
 			invoicePosWindow.setScene(scene);
+			invoicePosWindow.setResizable(false);
+			invoicePosWindow.getIcons().add(new javafx.scene.image.Image("/QuickCustomerManagment/img/plus-square.png"));
 			invoicePosWindow.setTitle(AppDataSettings.languageBundle.getString("invoicePosWindowHeader"));
 			NewInvoicePosController.invoiceId = INVOICEID;
 
