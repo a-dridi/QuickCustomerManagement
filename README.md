@@ -8,7 +8,7 @@ The application is written in Java 13 and is easy to use.
 The list is downloaded through the Java HTTP Package and is available automatically in this application.
 - Invoices and customer database
 Your data is saved fast and efficient in an SQLlite Database.
-- Create and send invoice PDFs with one click
+- Create and send invoice PDFs per email with one click
 Invoices are saved in PDF in your invoices folder and they are sent to the customer email address through your SMTP mail provider.
 - Overview of unpaid invoices
 If you start the application, then you can see directly the unpaid invoices with the customer and invoice sum. 
