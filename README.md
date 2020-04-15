@@ -12,10 +12,10 @@ Your data is saved fast and efficient in an SQLlite Database.
 Invoices are saved in PDF in your invoices folder and they are sent to the customer email address through your SMTP mail provider.
 - Overview of unpaid invoices
 If you start the application, then you can see directly the unpaid invoices with the customer and invoice sum. 
-- Create and manage products
+- Create and manage your products
 You can create product templates and manage the available amount of products and the product price.
 
-![Screenshot of Desktop Application Quick Customer Managment](https://raw.githubusercontent.com/a-dridi/QuickCustomerManagment/master/screenshot.PNG)
+![Screenshot of Desktop Application Quick Customer Managment](https://raw.githubusercontent.com/a-dridi/QuickCustomerManagement/master/screenshot.PNG)
 
 The application needs a Java runtime environment with a version of at least 13.0.
 
