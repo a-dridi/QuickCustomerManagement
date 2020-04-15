@@ -1,4 +1,4 @@
-# Quick Customer Managment
+# Quick Customer Management
 
 A desktop application to manage your customers and create invoices in any currency.
 The application is written in Java 13 and is easy to use. 
