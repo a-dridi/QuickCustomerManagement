@@ -126,7 +126,7 @@ public class SettingsController implements Initializable {
 		this.settingsHeader.setText(AppDataSettings.languageBundle.getString("settingsWindowHeaderText"));
 		this.defaultcurrencySettingsDesc
 				.setText(AppDataSettings.languageBundle.getString("settingsWindowDefaultcurrencyText"));
-		this.settingsHeader.setText(AppDataSettings.languageBundle.getString("settingsWindowDefaultcurrencyText"));
+		this.settingsHeader.setText(AppDataSettings.languageBundle.getString("settingsWindowHeaderText"));
 		this.companylogoSettingsDesc.setText(AppDataSettings.languageBundle.getString("settingsWindowCompanylogoText"));
 		this.opencompanylogoButton.setText(AppDataSettings.languageBundle.getString("settingsWindowOpenButtonText"));
 		this.yourCompanyDetailsLabel

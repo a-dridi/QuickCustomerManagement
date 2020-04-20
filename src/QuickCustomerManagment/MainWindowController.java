@@ -99,11 +99,27 @@ public class MainWindowController implements Initializable {
 		{
 			put("en", "English");
 			put("de", "Deutsch");
+			put("ar", "العربية");
+			put("zh-CN", "简体中文");
+			put("zh-TW", "中國傳統的");
+			put("nl", "Nederlands");
+			put("fr", "Français");
+			put("ind", "Bahasa Indonesia");
+			put("it", "Italiano");
+			put("ja", "日本語");
+			put("ko", "한국어");
+			put("pl", "Polski");
+			put("pt", "Português");
+			put("ru", "Pусский");
+			put("es", "Español");
+			put("th", "ไทย");
+			put("vi", "Tiếng Việt");
 		}
 	};
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
+		
 		try {
 			this.addIcon.setImage(new Image("/QuickCustomerManagment/img/plus-square.png"));
 			this.eyeIcon.setImage(new Image("/QuickCustomerManagment/img/eye.png"));
@@ -123,8 +139,9 @@ public class MainWindowController implements Initializable {
 			this.settings.loadUIText("en");
 			this.languageSelector.getSelectionModel().select(langList.get("en"));
 		}
+		
 		settings.loadDatabase();
-		// settings.loadAppSettings();
+		//settings.loadAppSettings();
 		loadUnpaidInvoices();
 		statusInfo = new SimpleStringProperty(
 				AppDataSettings.languageBundle.getString("mainWindowsaddunpaidinvoiceInfoText").replace("--%--",
@@ -223,11 +240,14 @@ public class MainWindowController implements Initializable {
 	 */
 	@FXML
 	public void handleLanguageChanged(ActionEvent event) {
-		AppDataSettings settings = new AppDataSettings();
+		
+		this.settings = new AppDataSettings();
 		this.settings.loadUIText(this.getKeyOfValue(this.langList, this.languageSelector.getValue().toString()));
+		reloadUnpaidInvoices();
+		
 		loadUiMainWindowsText();
-		statusInfo = new SimpleStringProperty(AppDataSettings.languageBundle
-				.getString("mainWindowsaddunpaidinvoiceInfoText").replace("--%--", "" + unpaidInvoicesData.size()));
+		statusInfo.setValue(AppDataSettings.languageBundle.getString("mainWindowsaddunpaidinvoiceInfoText").replace("--%--",
+				"" + this.unpaidInvoicesData.size()));
 	}
 
 	/**
@@ -269,11 +289,18 @@ public class MainWindowController implements Initializable {
 		this.unpaidInvoiceCustomersurname.setCellValueFactory(new PropertyValueFactory<>("customersurname"));
 		this.unpaidInvoiceCustomerpaybutton.setCellValueFactory(new PropertyValueFactory<>("paid"));
 		this.unpaidInvoiceCustomershowinvoicebutton.setCellValueFactory(new PropertyValueFactory<>("showinvoice"));
+		try {
 		unpaidInvoicesData.addAll(this.unpaidInvoicesList);
+		} catch (NullPointerException e) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle(AppDataSettings.languageBundle.getString("errorWindowHeader").toUpperCase());
+			alert.setContentText(AppDataSettings.languageBundle.getString("errorAppdatabase"));
+			alert.show();
+			ErrorReport.reportError("Database write/access error", e.getMessage() + e.getCause());
+		}
 		this.unpaidInvoices
 				.setPlaceholder(new Label(AppDataSettings.languageBundle.getString("unpaidinvicesDefaultPlaceholder")));
 		this.unpaidInvoices.setItems(this.unpaidInvoicesData);
-
 		this.unpaidInvoices.getColumns().addAll(this.unpaidInvoiceDate, this.unpaidInvoiceId, this.unpaidInvoiceSum,
 				this.unpaidInvoiceCurrencyIso, this.unpaidInvoiceCustomercompanyname,
 				this.unpaidInvoiceCustomerforename, this.unpaidInvoiceCustomersurname,
@@ -286,7 +313,6 @@ public class MainWindowController implements Initializable {
 		unpaidInvoicesData.addAll(reloadData.getUnpaidInvoices());
 		statusInfo.set(AppDataSettings.languageBundle.getString("mainWindowsaddunpaidinvoiceInfoText").replace("--%--",
 				"" + unpaidInvoicesData.size()));
-		System.out.println("DEBUG RELOADED");
 	}
 
 	/**

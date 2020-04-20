@@ -91,6 +91,8 @@ public class NewInvoiceController implements Initializable {
 	private Double taxpct = 0.0;
 
 	@FXML
+	private Text newinvoiceHeader = new Text();
+	@FXML
 	private Text customerinvoicedesc = new Text();
 	@FXML
 	private Text taxnumbernvoicedesc = new Text();
@@ -213,6 +215,13 @@ public class NewInvoiceController implements Initializable {
 				invoiceItemsColumnItemDeletebutton);
 
 		this.countryinvoicecombobox.getItems().addAll(loadData.getCountries());
+		this.currencyinvoicecombobox.getItems().add("USD");
+		this.currencyinvoicecombobox.getItems().add("EUR");
+		this.currencyinvoicecombobox.getItems().add("GBP");
+		this.currencyinvoicecombobox.getItems().add("CHF");
+		this.currencyinvoicecombobox.getItems().add("JPY");
+		this.currencyinvoicecombobox.getItems().add("CNY");
+		this.currencyinvoicecombobox.getItems().add("---");
 		for (String currency : loadData.getCurrencies().keySet()) {
 			this.currencyinvoicecombobox.getItems().add(currency);
 		}
@@ -250,6 +259,7 @@ public class NewInvoiceController implements Initializable {
 	}
 
 	private void loadNewInvoiceWindowText() {
+		this.newinvoiceHeader.setText(AppDataSettings.languageBundle.getString("addnewinvoiceWindowHeader"));
 		this.invoiceItemsColumnItemId.setText(AppDataSettings.languageBundle.getString("invoiceItemColumnId"));
 		this.invoiceItemsColumnItemName.setText(AppDataSettings.languageBundle.getString("invoiceItemColumnName"));
 		this.invoiceItemsColumnItemUnit.setText(AppDataSettings.languageBundle.getString("invoiceItemColumnUnit"));

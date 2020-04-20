@@ -123,7 +123,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			// c.setAutoCommit(false);
 
 			// Create database if it was not created;
@@ -267,7 +267,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			Statement st = c.createStatement();
 			ResultSet rs = st.executeQuery("SELECT description, value FROM appsettings");
 
@@ -312,7 +312,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 
 			// c.setAutoCommit(false);
 			Statement st = c.createStatement();
@@ -348,7 +348,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 
 			Statement st = c.createStatement();
 			String sql = "UPDATE Customer SET email='" + customerEmail + "', forename = '" + forenameclientfield
@@ -381,7 +381,7 @@ public class AppDataSettings implements Serializable {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 			String sql = "SELECT id, email, forename, lastname, companyname, taxnumber, street, zipcode, city, county, country, currencyiso, note FROM customer where id = "
@@ -416,7 +416,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -453,7 +453,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 			int priceperunitCent = (int) ((priceperunit * 100));
@@ -489,7 +489,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -524,7 +524,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -569,7 +569,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -615,7 +615,7 @@ public class AppDataSettings implements Serializable {
 		try {
 
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			int id = 0;
 			Statement st = c.createStatement();
@@ -657,7 +657,7 @@ public class AppDataSettings implements Serializable {
 		try {
 
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			int id = 0;
 			Statement st = c.createStatement();
@@ -716,7 +716,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			int id = 0;
 			Statement st = c.createStatement();
@@ -765,7 +765,7 @@ public class AppDataSettings implements Serializable {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			int id = 0;
 			Statement st = c.createStatement();
@@ -803,7 +803,7 @@ public class AppDataSettings implements Serializable {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 			String sql = "SELECT invoice.id, invoice.date, invoice.sum, invoice.currencyiso, customer.companyname, customer.forename, customer.lastname FROM invoice INNER JOIN customer ON invoice.customerid=customer.id WHERE paid=0";
@@ -841,7 +841,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -877,7 +877,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -912,7 +912,7 @@ public class AppDataSettings implements Serializable {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			int id = 0;
 			Statement st = c.createStatement();
@@ -948,7 +948,7 @@ public class AppDataSettings implements Serializable {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 			String sql = "SELECT id, productname, priceperunit, availableamount, note FROM products where id = " + id;
@@ -981,7 +981,7 @@ public class AppDataSettings implements Serializable {
 		Connection c = null;
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 			String sql = "SELECT availableamount FROM products where id = " + id;
@@ -1018,7 +1018,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -1049,7 +1049,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -1084,7 +1084,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -1114,7 +1114,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -1148,7 +1148,7 @@ public class AppDataSettings implements Serializable {
 
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 
@@ -1193,7 +1193,7 @@ public class AppDataSettings implements Serializable {
 										// parameter "availableamount"
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 			String sql = "SELECT availableamount FROM products WHERE id = " + id;
@@ -1249,7 +1249,7 @@ public class AppDataSettings implements Serializable {
 										// parameter "availableamount"
 		try {
 			Class.forName("org.sqlite.JDBC");
-			c = DriverManager.getConnection("jdbc:sqlite:customermanagment.db");
+			c = DriverManager.getConnection("jdbc:sqlite:appdatabase.db");
 			c.setAutoCommit(false);
 			Statement st = c.createStatement();
 			String sql = "SELECT availableamount FROM products WHERE productname = '" + productname + "'";

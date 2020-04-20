@@ -3,6 +3,8 @@
 /bin
 countries.csv
 customermanagment.db
+appdatabase.db
+appdatabase.db-journal
 customermanagment.db-journal
 credentials.txt
 /Output

@@ -3,6 +3,9 @@
 A desktop application to manage your customers and create invoices in any currency.
 The application is written in Java 13 and is easy to use. 
 
+## Video
+https://youtu.be/Aj7FCK35exI 
+
 ### Features
 - A list of currencies and countries
 The list is downloaded through the Java HTTP Package and is available automatically in this application.
@@ -43,6 +46,11 @@ http://hc.apache.org/downloads.cgi
 ##Important configuration
 Please activate the recommended report error functionality. You can do that by copying the file "credentials.txt_template" to the file "credentials.txt" with the values of your error report server.
 
+## Available languages
+English, Arabic (العربية), Chinese Simplified (简体中文), Chinese Traditional (中國傳統的), Dutch (Nederlands), French (Français), German (Deutsch), Indonesian (Bahasa Indonesia), Italian (Italiano), Japanese (日本語), Korean (한국어), Polish (Polski), Portuguese (Português), Russian (Pусский), Spanish (Español), Thai (ไทย) ,  Vietnamese (Tiếng Việt)
+
+You can also translate the application in other languages. Please use the language bundle file in the application source folder "languages". Thank you for your support. 
+
 ## Test
 A JUnit Test (JUnit5) is available in the file: src/test/AppDataSettingsTest.java
 
@@ -65,3 +73,7 @@ Deployment from source. Please download this repository and open it in an IDE to
 
 * **A. Dridi** - [a-dridi](https://github.com/a-dridi/)
 
+##Screenshots
+![Screenshot Overview of Desktop Application Quick Customer Managment](https://raw.githubusercontent.com/a-dridi/QuickCustomerManagment/master/quickcustomermanagement_overview.PNG.PNG)
+![Screenshot2 of Desktop Application Quick Customer Managment](https://raw.githubusercontent.com/a-dridi/QuickCustomerManagment/master/screenshot2.PNG)
+![Screenshot3 of Desktop Application Quick Customer Managment](https://raw.githubusercontent.com/a-dridi/QuickCustomerManagment/master/screenshot3.PNG)

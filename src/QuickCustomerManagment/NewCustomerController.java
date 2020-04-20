@@ -96,6 +96,14 @@ public class NewCustomerController implements Initializable {
 		loadData.loadAppSettings();
 
 		this.countryclientcombobox.getItems().addAll(loadData.getCountries());
+		
+		this.currencyclientcombobox.getItems().add("USD");
+		this.currencyclientcombobox.getItems().add("EUR");
+		this.currencyclientcombobox.getItems().add("GBP");
+		this.currencyclientcombobox.getItems().add("CHF");
+		this.currencyclientcombobox.getItems().add("JPY");
+		this.currencyclientcombobox.getItems().add("CNY");
+		this.currencyclientcombobox.getItems().add("---");
 		for (String currency : loadData.getCurrencies().keySet()) {
 			this.currencyclientcombobox.getItems().add(currency);
 		}
@@ -125,6 +133,26 @@ public class NewCustomerController implements Initializable {
 	private void handleSaveCustomerAction(ActionEvent event) {
 
 		try {
+			countryclientcombobox.getValue().toString();
+		} catch(NullPointerException e) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle(AppDataSettings.languageBundle.getString("errorWindowHeader").toUpperCase());
+			alert.setContentText(AppDataSettings.languageBundle.getString("errorNewCustomerCountrynotselected"));
+			alert.show();
+			return;
+		}
+		
+		try {
+			currencyclientcombobox.getValue().toString();
+		} catch(NullPointerException e) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle(AppDataSettings.languageBundle.getString("errorWindowHeader").toUpperCase());
+			alert.setContentText(AppDataSettings.languageBundle.getString("errorNewCustomerCurrencynotselected"));
+			alert.show();
+			return;
+		}
+		
+		try {
 			Integer zipCodeNumber = Integer.parseInt(zipcodeclientfield.getText());
 			if (loadData.addNewCustomer(emailclientfield.getText(), forenameclientfield.getText(), surnameclientfield.getText(),
 					companynameclientfield.getText(), taxnumberclientfield.getText(), streetclientfield.getText(),
@@ -140,7 +168,7 @@ public class NewCustomerController implements Initializable {
 			} else {
 				Alert alert = new Alert(Alert.AlertType.ERROR);
 				alert.setTitle(AppDataSettings.languageBundle.getString("errorWindowHeader").toUpperCase());
-				alert.setContentText(loadData.getErrorMessage());
+				alert.setContentText(AppDataSettings.languageBundle.getString("errorNewCustomerCustomerexists").toUpperCase() + " " + loadData.getErrorMessage());
 				alert.show();
 			}
 
