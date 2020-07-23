@@ -73,7 +73,7 @@ Deployment from source. Please download this repository and open it in an IDE to
 
 * **A. Dridi** - [a-dridi](https://github.com/a-dridi/)
 
-##Screenshots
-![Screenshot Overview of Desktop Application Quick Customer Managment](https://raw.githubusercontent.com/a-dridi/QuickCustomerManagment/master/quickcustomermanagement_overview.PNG.PNG)
+## Screenshots
+![Screenshot Overview of Desktop Application Quick Customer Managment](https://raw.githubusercontent.com/a-dridi/QuickCustomerManagment/master/quickcustomermanagement_overview.PNG)
 ![Screenshot2 of Desktop Application Quick Customer Managment](https://raw.githubusercontent.com/a-dridi/QuickCustomerManagment/master/screenshot2.PNG)
 ![Screenshot3 of Desktop Application Quick Customer Managment](https://raw.githubusercontent.com/a-dridi/QuickCustomerManagment/master/screenshot3.PNG)
